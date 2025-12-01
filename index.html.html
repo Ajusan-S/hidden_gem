@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HiddenGem — Discover + Categories</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --brand: #5b3df5;
+        --brand-600: #4a2fe6;
+        --brand-700: #3b26c6;
+        --text: #ffffff;
+        --muted: rgba(255,255,255,0.75);
+        --muted-2: rgba(255,255,255,0.6);
+        --glass: rgba(10, 12, 20, 0.35);
+        --border: rgba(255,255,255,0.14);
+        --gold: #f5b544;
+        --heart-red: #ff3b5c;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html, body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        background: #ffffff;
+        color: var(--text);
+        overflow-x: hidden;
+      }
+
+      /* HERO SECTION */
+      .hero-section {
+        position: relative;
+        min-height: 100vh;
+        overflow: hidden;
+      }
+
+      .bg {
+        position: absolute;
+        inset: 0;
+        background-image: url('https://images.unsplash.com/photo-1501179691627-eeaa65ea017c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+        background-size: cover;
+        background-position: 50% 40%;
+        filter: saturate(0.85) brightness(0.9) contrast(1.05);
+        transform: translate3d(0,0,0) scale(1.06);
+        transition: transform 0.12s ease-out;
+        will-change: transform;
+      }
+
+      .vignette {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.2) 45%, rgba(0,0,0,0.5) 100%),
+                    linear-gradient(to bottom, rgba(8,10,18,0) 0%, rgba(8,10,18,0.35) 40%, rgba(8,10,18,0.65) 65%, rgba(8,10,18,0.85) 100%);
+      }
+
+      .nav-wrap {
+        position: relative;
+        z-index: 5;
+        padding: 14px 24px;
+      }
+
+      .nav {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        color: var(--text);
+        text-decoration: none;
+      }
+
+      .logo {
+        width: 40px;
+        height: 40px;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(120% 120% at 30% 20%, #7a66ff 0%, var(--brand) 45%, #2a1f99 100%);
+        border-radius: 999px;
+        box-shadow: 0 10px 22px rgba(91,61,245,0.45), inset 0 2px 6px rgba(255,255,255,0.25);
+        position: relative;
+        overflow: hidden;
+        transform: translateZ(0);
+      }
+
+      .logo::after {
+        content: '';
+        position: absolute;
+        inset: -40% -60% auto auto;
+        width: 140%;
+        height: 140%;
+        background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,0.55) 50%, transparent 65%);
+        transform: translateX(-120%) rotate(20deg);
+        animation: logoShine 4.5s ease-in-out infinite;
+      }
+
+      @keyframes logoShine {
+        0% {
+          transform: translateX(-120%) rotate(20deg);
+        }
+        55% {
+          transform: translateX(120%) rotate(20deg);
+        }
+        100% {
+          transform: translateX(120%) rotate(20deg);
+        }
+      }
+
+      .pin {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #fff;
+        mask: radial-gradient(circle at 50% 35%, transparent 7px, #000 8px) center/100% 100% no-repeat,
+              conic-gradient(#000 0 360deg);
+      }
+
+      .brand-title {
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        font-size: 28px;
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+      }
+
+      .brand-title em {
+        font-style: normal;
+        color: var(--brand);
+        text-shadow: 0 4px 18px rgba(91,61,245,0.5);
+      }
+
+      .brand-sub {
+        font-size: 12px;
+        letter-spacing: 1.6px;
+        opacity: 0.8;
+        margin-top: -2px;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 26px;
+      }
+
+      .nav-links a {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        opacity: 0.9;
+        position: relative;
+        padding: 6px 2px;
+      }
+
+      .nav-links a::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -6px;
+        height: 2px;
+        background: currentColor;
+        opacity: 0.0;
+        transform: scaleX(0.25);
+        transition: transform 220ms ease, opacity 220ms ease;
+      }
+
+      .nav-links a:hover::after {
+        opacity: 1;
+        transform: scaleX(1);
+      }
+
+      .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .saved {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text);
+        text-decoration: none;
+        opacity: 0.9;
+        position: relative;
+        transition: transform 180ms ease;
+      }
+
+      .saved:hover {
+        transform: translateY(-1px);
+      }
+
+      .heart {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        position: relative;
+      }
+
+      .heart::before {
+        content: '\2661';
+        font-size: 20px;
+        color: #fff;
+        position: absolute;
+        inset: 0;
+        transition: opacity 180ms ease;
+      }
+
+      .heart::after {
+        content: '\2665';
+        font-size: 20px;
+        color: #ff3b5c;
+        position: absolute;
+        inset: 0;
+        transform: scale(0.9);
+        opacity: 0;
+        transition: transform 220ms ease, opacity 220ms ease;
+        filter: drop-shadow(0 6px 12px rgba(255,59,92,0.5));
+      }
+
+      .saved:hover .heart::after {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .saved:hover .heart::before {
+        opacity: 0;
+      }
+
+      .btn {
+        appearance: none;
+        border: 1px solid var(--border);
+        color: var(--text);
+        background: rgba(255,255,255,0.05);
+        padding: 12px 18px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, border-color 160ms ease;
+        backdrop-filter: blur(6px);
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(0,0,0,0.25);
+      }
+
+      .btn-primary {
+        background: var(--brand);
+        border-color: transparent;
+        box-shadow: 0 10px 30px rgba(91,61,245,0.45), inset 0 1px 0 rgba(255,255,255,0.25);
+      }
+
+      .btn-primary:hover {
+        background: var(--brand-600);
+      }
+
+      .hero {
+        position: relative;
+        z-index: 3;
+        padding: 60px 24px 48px;
+      }
+
+      .hero-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid var(--border);
+        backdrop-filter: blur(6px);
+        font-weight: 600;
+        color: var(--text);
+        box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+        animation: floatIn 700ms ease both;
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: var(--brand);
+        box-shadow: 0 0 14px rgba(91,61,245,0.8);
+      }
+
+      .headline {
+        font-size: clamp(38px, 6.2vw, 92px);
+        font-weight: 800;
+        line-height: 1.04;
+        margin: 22px 0 12px;
+        letter-spacing: -0.5px;
+        text-shadow: 0 8px 40px rgba(0,0,0,0.45);
+      }
+
+      .headline i {
+        font-style: italic;
+        font-weight: 900;
+      }
+
+      .subhead {
+        font-size: clamp(16px, 2vw, 22px);
+        color: var(--muted);
+        max-width: 980px;
+        line-height: 1.5;
+      }
+
+      .authetic{
+        font-style: italic;
+        font-weight: 400;
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-ctas {
+        margin-top: 26px;
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .search {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid var(--border);
+        padding: 14px 16px;
+        border-radius: 14px;
+        min-width: 280px;
+        color: var(--muted);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      }
+
+      .search input {
+        background: transparent;
+        border: 0;
+        outline: 0;
+        color: var(--text);
+        width: 260px;
+        font-size: 16px;
+      }
+
+      .search .icon {
+        width: 22px;
+        height: 22px;
+        border-radius: 5px;
+        display: grid;
+        place-items: center;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(120px, 1fr));
+        gap: 22px;
+        margin-top: 48px;
+      }
+
+      .stat-card {
+        padding: 18px 16px;
+        border-radius: 14px;
+        background: rgba(10,12,20,0.35);
+        border: 1px solid var(--border);
+        backdrop-filter: blur(4px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        transform: translateY(10px);
+        opacity: 0;
+        animation: riseIn 800ms ease 300ms forwards;
+      }
+
+      .stat-num {
+        font-weight: 900;
+        color: var(--gold);
+        font-size: clamp(26px, 3.4vw, 44px);
+        letter-spacing: -0.5px;
+      }
+
+      .stat-label {
+        margin-top: 6px;
+        color: var(--muted-2);
+        font-weight: 600;
+      }
+
+      @keyframes floatIn {
+        from {
+          transform: translateY(10px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes riseIn {
+        0% {
+          transform: translateY(16px);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* CATEGORY SECTION */
+      /* Non-blurred visual divider between hero and categories */
+      .seam-divider {
+        height: 48px;
+        background: linear-gradient(to bottom, rgba(10,12,20,0.9) 0%, rgba(10,12,20,0.45) 45%, rgba(10,12,20,0.15) 70%, rgba(255,255,255,0) 100%);
+      }
+
+      .cat-page {
+        --cat-brand: #5b3df5;
+        --cat-border: rgba(16,19,26,0.06);
+        --cat-gold: #f5b544;
+        color: #10131a;
+        background: #ffffff;
+      }
+
+      .cat-wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 44px 24px 72px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .cat-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(91,61,245,0.08);
+        color: var(--cat-brand);
+        border: 1px solid rgba(91,61,245,0.18);
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        box-shadow: 0 8px 18px rgba(91,61,245,0.15);
+        transform: translateY(6px);
+        opacity: 0;
+        animation: cat-fadeUp 600ms ease 120ms forwards;
+      }
+
+      .cat-title {
+        margin: 22px 0 10px;
+        font-size: clamp(28px, 5.4vw, 54px);
+        line-height: 1.1;
+        font-weight: 900;
+        color: #0f1220;
+        text-align: center;
+        letter-spacing: -0.3px;
+        text-shadow: 0 2px 0 rgba(255,255,255,0.35);
+      }
+
+      .cat-title-underline {
+        display: block;
+        width: 74px;
+        height: 6px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--cat-gold), #f7d17d);
+        margin: 10px auto 0;
+        box-shadow: 0 6px 16px rgba(245,181,68,0.55);
+        transform: scaleX(0);
+        transform-origin: center;
+        animation: cat-underline 700ms cubic-bezier(.2,.8,.2,1) 260ms forwards;
+      }
+
+      .cat-sub {
+        margin: 14px auto 34px;
+        max-width: 900px;
+        text-align: center;
+        color: #5b657a;
+        font-size: clamp(15px, 1.8vw, 18px);
+      }
+
+      .cat-grid {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 22px;
+        margin-top: 28px;
+      }
+
+      .cat-card {
+        border-radius: 18px;
+        padding: 24px 20px;
+        box-shadow: 0 18px 60px rgba(43, 29, 128, 0.35), inset 0 1px 0 rgba(255,255,255,0.25);
+        border: 1px solid transparent;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+        transform: translateY(10px);
+        opacity: 0;
+        animation: cat-riseIn 720ms cubic-bezier(.2,.8,.2,1) forwards;
+      }
+
+      #box1{
+        background-color: #fffbeb;
+      }
+
+      #box2{
+        background-color: #eef2ff;
+      }
+
+      #box3{
+        background-color: #fff1f2;
+      }
+      
+      #box4{
+        background-color: #ecfdf5;
+      }
+      
+
+      #box5{
+        background-color: #eff6ff;
+      }
+
+      #box6{
+        background-color: #faf5ff;
+      }
+
+      .cat-card::after {
+        content: '';
+        position: absolute;
+        inset: -40% -60% auto auto;
+        height: 180%;
+        width: 20%;
+        background: linear-gradient(120deg, rgba(255,255,255,0.0) 20%, rgba(255,255,255,0.25) 45%, rgba(255,255,255,0.0) 70%);
+        transform: translateX(-150%) rotate(25deg);
+        transition: transform 600ms ease;
+        z-index: -1;
+      }
+
+      .cat-card:hover::after {
+        transform: translateX(160%) rotate(25deg);
+      }
+
+      .cat-card:hover {
+        box-shadow: 0 28px 80px rgba(43, 29, 128, 0.45);
+        transform: translateY(-4px);
+      }
+
+      .cat-icon-wrap {
+        width: 72px;
+        height: 72px;
+        border-radius: 18px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 14px;
+        position: relative;
+        background: rgba(255,255,255,0.14);
+      }
+
+      .cat-icon-wrap svg {
+        width: 34px;
+        height: 34px;
+        stroke: #1a1444;
+        color: #1a1444;
+      }
+
+      .cat-name {
+        font-weight: 800;
+        font-size: 18px;
+        color: #ffffff;
+      }
+
+      .cat-meta {
+        margin-top: 6px;
+        color: rgba(255,255,255,0.85);
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .cat-card[data-accent="sand"] .cat-icon-wrap,
+      .cat-card[data-accent="indigo"] .cat-icon-wrap,
+      .cat-card[data-accent="rose"] .cat-icon-wrap,
+      .cat-card[data-accent="mint"] .cat-icon-wrap,
+      .cat-card[data-accent="blue"] .cat-icon-wrap,
+      .cat-card[data-accent="orchid"] .cat-icon-wrap {
+        background: rgba(255,255,255,0.14);
+      }
+
+      .cat-card:nth-child(1) {
+        animation-delay: 120ms;
+      }
+
+      .cat-card:nth-child(2) {
+        animation-delay: 190ms;
+      }
+
+      .cat-card:nth-child(3) {
+        animation-delay: 260ms;
+      }
+
+      .cat-card:nth-child(4) {
+        animation-delay: 330ms;
+      }
+
+      .cat-card:nth-child(5) {
+        animation-delay: 400ms;
+      }
+
+      .cat-card:nth-child(6) {
+        animation-delay: 470ms;
+      }
+
+      @keyframes cat-fadeUp {
+        from {
+          transform: translateY(10px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes cat-underline {
+        to {
+          transform: scaleX(1);
+        }
+      }
+
+      @keyframes cat-riseIn {
+        0% {
+          transform: translateY(14px);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .nav-links {
+          display: none;
+        }
+        .stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .cat-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      @media (max-width: 640px) {
+        .nav-actions .btn {
+          display: none;
+        }
+        .brand-title {
+          font-size: 22px;
+        }
+        .hero {
+          padding-top: 24px;
+        }
+        .headline {
+          font-size: clamp(30px, 9vw, 64px);
+        }
+        .subhead {
+          font-size: 16px;
+        }
+        .stats {
+          grid-template-columns: 1fr 1fr;
+          gap: 14px;
+        }
+        .search {
+          width: 100%;
+          min-width: 0;
+        }
+        .search input {
+          width: 100%;
+        }
+        .cat-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 14px;
+        }
+        .cat-wrap {
+          padding: 36px 18px 64px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+      <div class="bg" aria-hidden="true"></div>
+      <div class="vignette" aria-hidden="true"></div>
+
+      <header class="nav-wrap">
+        <nav class="nav">
+          <a class="brand" href="#">
+            <span class="logo"><span class="pin"></span></span>
+            <span>
+              <div class="brand-title">Hidden<em>Gem</em></div>
+              <div class="brand-sub">DISCOVER SRI LANKA</div>
+            </span>
+          </a>
+          <div class="nav-links">
+            <a href="#discover">Discover</a>
+            <a href="#experiences">Experiences</a>
+            <a href="#guides">Local Guides</a>
+            <a href="#about">About Us</a>
+          </div>
+          <div class="nav-actions">
+            <a class="saved" href="#saved"><span class="heart" aria-hidden="true"></span>Saved</a>
+            <a class="btn btn-primary" href="#signin">Sign In</a>
+          </div>
+        </nav>
+      </header>
+
+      <main class="hero">
+        <div class="hero-inner">
+          <div class="tag"><span class="dot"></span> Discover the untold stories of Sri Lanka</div>
+          <h1 class="headline">Experience <span class="authetic"><i>authentic</i></span><br/>Sri Lanka</h1>
+          <p class="subhead">Explore curated hidden gems and culinary journeys crafted by local experts, designed for the discerning traveler seeking authentic experiences.</p>
+
+          <div class="hero-ctas">
+            <label class="search" for="searchInput">
+              <span class="icon">🔎</span>
+              <input id="searchInput" placeholder="Discover Hidden Gems" />
+            </label>
+            <a class="btn" href="#community">Join Our Community</a>
+          </div>
+
+          <section class="stats">
+            <div class="stat-card" style="animation-delay: 0.15s;">
+              <div class="stat-num">200+</div>
+              <div class="stat-label">Hidden Locations</div>
+            </div>
+            <div class="stat-card" style="animation-delay: 0.3s;">
+              <div class="stat-num">50+</div>
+              <div class="stat-label">Local Guides</div>
+            </div>
+            <div class="stat-card" style="animation-delay: 0.45s;">
+              <div class="stat-num">15k+</div>
+              <div class="stat-label">Happy Travelers</div>
+            </div>
+            <div class="stat-card" style="animation-delay: 0.6s;">
+              <div class="stat-num">4.9</div>
+              <div class="stat-label">Average Rating</div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </section>
+
+    <!-- Clean, non-blurred divider -->
+    <div class="seam-divider" aria-hidden="true"></div>
+
+    <!-- CATEGORIES SECTION -->
+    <section class="cat-page">
+      <div class="cat-wrap" aria-label="Experience Categories">
+        <div class="cat-pill"><i data-lucide="sparkles"></i> Explore By Category</div>
+        <h2 class="cat-title">Find Your Perfect Experience</h2>
+        <span class="cat-title-underline" aria-hidden="true"></span>
+        <p class="cat-sub">Discover Sri Lanka's diverse offerings categorized to match your travel style and preferences.</p>
+
+        <div class="cat-grid">
+          <article class="cat-card" id="box1" data-accent="sand">
+            <div class="cat-icon-wrap" style="background-color: #fef3c7;"><i data-lucide="mountain"></i></div>
+            <div class="cat-name" style="color: #78350f;">Mountain Escapes</div>
+            <div class="cat-meta" style="color: #78350f;">48 experiences</div>
+          </article>
+          <article class="cat-card" id="box3"  data-accent="indigo">
+            <div class="cat-icon-wrap" style="background-color: #e0e7ff;"><i data-lucide="utensils"></i></div>
+            <div class="cat-name" style="color: #312e81;">Culinary Journeys</div>
+            <div class="cat-meta" style="color: #312e81;">36 experiences</div>
+          </article>
+          <article class="cat-card" id="box3" data-accent="rose">
+            <div class="cat-icon-wrap" style="background-color: #ffe4e6;"><i data-lucide="heart"></i></div>
+            <div class="cat-name" style="color: #881337;">Romantic Getaways</div>
+            <div class="cat-meta" style="color: #881337;">24 experiences</div>
+          </article>
+          <article class="cat-card" id="box4"  data-accent="mint">
+            <div class="cat-icon-wrap" style="background-color: #d1fae5;"><i data-lucide="trees"></i></div>
+            <div class="cat-name" style="color: #064e3b" >Forest Retreats</div>
+            <div class="cat-meta" style="color: #064e3b">32 experiences</div>
+          </article>
+          <article class="cat-card" id="box5"  data-accent="blue">
+            <div class="cat-icon-wrap" style="background-color: #dbeafe;"><i data-lucide="waves"></i></div>
+            <div class="cat-name" style="color: #1e3a8a;">Coastal Adventures</div>
+            <div class="cat-meta" style="color: #1e3a8a;">42 experiences</div>
+          </article>
+          <article class="cat-card" id="box6"  data-accent="orchid">
+            <div class="cat-icon-wrap" style="background-color: #f3e8ff;"><i data-lucide="landmark"></i></div>
+            <div class="cat-name" style="color: #581c87;">Cultural Heritage</div>
+            <div class="cat-meta" style="color: #581c87;">38 experiences</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scripts: hero animations + lucide icons -->
+    <script>
+      const animateIn = () => {
+        document.querySelectorAll('.headline, .subhead, .hero-ctas').forEach((el, i) => {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(14px)';
+          setTimeout(() => {
+            el.style.transition = 'transform 600ms ease, opacity 600ms ease';
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+          }, 180 + i * 120);
+        });
+      };
+
+      const bg = document.querySelector('.bg');
+      const parallaxStrength = 18;
+      let rafId = null;
+      let targetX = 0, targetY = 0, currentX = 0, currentY = 0;
+
+      const onMove = (x, y) => {
+        const { innerWidth: w, innerHeight: h } = window;
+        const rx = (x / w - 0.5) * 2;
+        const ry = (y / h - 0.5) * 2;
+        targetX = -rx * parallaxStrength;
+        targetY = -ry * (parallaxStrength * 0.75);
+        if (!rafId) tick();
+      };
+
+      const tick = () => {
+        currentX += (targetX - currentX) * 0.08;
+        currentY += (targetY - currentY) * 0.08;
+        bg.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(1.08)`;
+        rafId = Math.abs(targetX - currentX) < 0.1 && Math.abs(targetY - currentY) < 0.1 
+          ? null 
+          : requestAnimationFrame(tick);
+      };
+
+      window.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
+      window.addEventListener('touchmove', (e) => {
+        const t = e.touches[0];
+        if (t) onMove(t.clientX, t.clientY);
+      }, { passive: true });
+
+      const logo = document.querySelector('.logo');
+      let tiltRaf;
+
+      const resetLogo = () => {
+        logo.style.transform = 'rotate(0deg) scale(1)';
+      };
+
+      const tilt = (ev) => {
+        const rect = logo.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dx = (ev.clientX - cx) / rect.width;
+        const dy = (ev.clientY - cy) / rect.height;
+        const r = (dx - dy) * 8;
+        cancelAnimationFrame(tiltRaf);
+        tiltRaf = requestAnimationFrame(() => {
+          logo.style.transform = `rotate(${r}deg) scale(1.02)`;
+        });
+      };
+
+      logo.addEventListener('mousemove', tilt);
+      logo.addEventListener('mouseleave', resetLogo);
+
+      document.querySelectorAll('.nav-links a').forEach((a, i) => {
+        a.style.opacity = '0';
+        a.style.transform = 'translateY(-6px)';
+        setTimeout(() => {
+          a.style.transition = 'opacity 300ms ease, transform 300ms ease';
+          a.style.opacity = '1';
+          a.style.transform = 'translateY(0)';
+        }, 120 * i + 200);
+      });
+
+      animateIn();
+    </script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script>
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+
+      document.querySelectorAll('.cat-card').forEach((card) => {
+        const icon = card.querySelector('svg');
+        if (!icon) return;
+
+        card.addEventListener('mouseenter', () => {
+          icon.style.transition = 'transform 280ms ease, filter 280ms ease';
+          icon.style.transform = 'scale(1.08) rotate(-2deg)';
+          icon.style.filter = 'drop-shadow(0 8px 18px rgba(91,61,245,0.35))';
+        });
+
+        card.addEventListener('mouseleave', () => {
+          icon.style.transform = 'scale(1) rotate(0deg)';
+          icon.style.filter = 'none';
+        });
+      });
+    </script>
+  </body>
+</html>
