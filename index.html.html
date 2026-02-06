@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>HiddenGem — Discover + Categories</title>
+    <title>HiddenGem — Combined</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -215,7 +216,7 @@
       }
 
       .heart::before {
-        content: '\2661';
+        content: '\u2661';
         font-size: 20px;
         color: #fff;
         position: absolute;
@@ -224,7 +225,7 @@
       }
 
       .heart::after {
-        content: '\2665';
+        content: '\u2665';
         font-size: 20px;
         color: #ff3b5c;
         position: absolute;
@@ -710,6 +711,347 @@
         }
       }
     </style>
+
+    <!-- How-it-works (namespaced) styles appended to avoid conflicts -->
+    <style>
+      /*
+        IMPORTANT: All classes are namespaced with 'hw-' prefix to avoid conflicts
+        when merged with existing sections.
+      */
+      :root {
+        --hw-brand: #5b3df5;
+        --hw-brand-600: #4a2fe6;
+        --hw-brand-700: #3b26c6;
+        --hw-gold: #f5b544;
+        --hw-text-dark: #0f1220;
+        --hw-text-muted: #5b657a;
+        --hw-bg: #f8f9fa;
+        --hw-card-bg: #ffffff;
+        --hw-border: rgba(16,19,26,0.06);
+        --hw-shadow: 0 15px 50px rgba(16,19,26,0.12);
+        --hw-shadow-hover: 0 25px 70px rgba(16,19,26,0.18);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      .hw-section {
+        background: var(--hw-bg);
+        padding: 64px 24px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hw-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+      }
+
+      .hw-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 999px;
+        background: rgba(91,61,245,0.08);
+        color: var(--hw-brand);
+        border: 1px solid rgba(91,61,245,0.18);
+        font-weight: 700;
+        font-size: 14px;
+        letter-spacing: 0.3px;
+        box-shadow: 0 4px 12px rgba(91,61,245,0.12);
+        margin: 0 auto;
+        display: block;
+        width: fit-content;
+        transform: translateY(10px);
+        opacity: 0;
+        animation: hw-fadeUp 600ms ease 200ms forwards;
+      }
+
+      .hw-title {
+        margin: 20px 0 8px;
+        font-size: clamp(36px, 5.4vw, 52px);
+        line-height: 1.1;
+        font-weight: 900;
+        color: var(--hw-text-dark);
+        text-align: center;
+        letter-spacing: -0.4px;
+        position: relative;
+        transform: translateY(10px);
+        opacity: 0;
+        animation: hw-fadeUp 600ms ease 300ms forwards;
+      }
+
+      .hw-title-underline {
+        display: inline-block;
+        position: relative;
+      }
+
+      .hw-title-underline::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 5px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--hw-gold), #f7d17d);
+        box-shadow: 0 4px 12px rgba(245,181,68,0.5);
+        animation: hw-underline 800ms cubic-bezier(.2,.8,.2,1) 600ms forwards;
+      }
+
+      .hw-description {
+        margin: 20px auto 40px;
+        max-width: 680px;
+        text-align: center;
+        color: var(--hw-text-muted);
+        font-size: clamp(15px, 1.8vw, 17px);
+        line-height: 1.65;
+        transform: translateY(10px);
+        opacity: 0;
+        animation: hw-fadeUp 600ms ease 400ms forwards;
+      }
+
+      .hw-steps {
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+        gap: 16px;
+        flex-wrap: nowrap;
+        margin-top: 40px;
+      }
+
+      .hw-step-card {
+        flex: 1 1 0;
+        max-width: 260px;
+        min-width: 240px;
+        background: var(--hw-card-bg);
+        border-radius: 16px;
+        padding: 28px 20px;
+        box-shadow: 0 8px 24px rgba(16,19,26,0.08);
+        border: 1px solid var(--hw-border);
+        text-align: center;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        transform: translateY(30px);
+        opacity: 0;
+        transition: transform 300ms ease, box-shadow 300ms ease;
+        min-height: 280px;
+      }
+
+      .hw-step-card.visible {
+        animation: hw-cardRise 700ms cubic-bezier(.2,.8,.2,1) forwards;
+      }
+
+      .hw-step-card:nth-child(1).visible {
+        animation-delay: 200ms;
+      }
+
+      .hw-step-card:nth-child(2).visible {
+        animation-delay: 350ms;
+      }
+
+      .hw-step-card:nth-child(3).visible {
+        animation-delay: 500ms;
+      }
+
+      .hw-step-card:nth-child(4).visible {
+        animation-delay: 650ms;
+      }
+
+      .hw-step-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 32px rgba(16,19,26,0.12);
+      }
+
+      .hw-icon-wrap {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: var(--hw-brand);
+        display: grid;
+        place-items: center;
+        margin: 0 auto 18px;
+        position: relative;
+        flex-shrink: 0;
+        box-shadow: 0 6px 20px rgba(91,61,245,0.25);
+        transition: transform 300ms ease, box-shadow 300ms ease;
+      }
+
+      .hw-step-card:hover .hw-icon-wrap {
+        transform: scale(1.08);
+        box-shadow: 0 8px 28px rgba(91,61,245,0.35);
+      }
+
+      .hw-icon-wrap svg {
+        width: 32px;
+        height: 32px;
+        stroke: #ffffff;
+        stroke-width: 2.5;
+      }
+
+      .hw-step-title {
+        font-weight: 800;
+        font-size: 18px;
+        color: var(--hw-text-dark);
+        margin-bottom: 10px;
+        letter-spacing: -0.2px;
+        line-height: 1.3;
+        flex-shrink: 0;
+      }
+
+      .hw-step-description {
+        font-size: 14px;
+        color: var(--hw-text-muted);
+        line-height: 1.6;
+        font-weight: 500;
+        flex-grow: 1;
+        margin: 0;
+      }
+
+      .hw-arrow {
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #d1d5db;
+        opacity: 0;
+        transform: translateX(-8px);
+        transition: opacity 400ms ease, transform 400ms ease;
+        flex-shrink: 0;
+        align-self: center;
+      }
+
+      .hw-arrow.visible {
+        opacity: 1;
+        transform: translateX(0);
+        animation: hw-arrowPulse 2.5s ease-in-out infinite;
+      }
+
+      .hw-arrow svg {
+        width: 20px;
+        height: 20px;
+        stroke: currentColor;
+        stroke-width: 2;
+      }
+
+      @keyframes hw-fadeUp {
+        from {
+          transform: translateY(10px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes hw-underline {
+        to {
+          width: 120px;
+        }
+      }
+
+      @keyframes hw-cardRise {
+        0% {
+          transform: translateY(30px);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes hw-arrowPulse {
+        0%, 100% {
+          transform: translateX(0);
+          opacity: 0.6;
+        }
+        50% {
+          transform: translateX(4px);
+          opacity: 1;
+        }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 1024px) {
+        .hw-steps {
+          gap: 12px;
+        }
+        .hw-step-card {
+          min-width: 220px;
+          max-width: 240px;
+          padding: 24px 18px;
+        }
+        .hw-arrow {
+          width: 20px;
+          height: 20px;
+        }
+        .hw-arrow svg {
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .hw-section {
+          padding: 56px 20px;
+        }
+        .hw-steps {
+          flex-wrap: wrap;
+          gap: 24px;
+          justify-content: center;
+        }
+        .hw-step-card {
+          min-width: calc(50% - 12px);
+          max-width: calc(50% - 12px);
+          padding: 24px 18px;
+        }
+        .hw-arrow {
+          display: none;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .hw-section {
+          padding: 48px 16px;
+        }
+        .hw-title {
+          font-size: clamp(28px, 8vw, 40px);
+        }
+        .hw-steps {
+          flex-direction: column;
+          gap: 20px;
+        }
+        .hw-step-card {
+          min-width: 100%;
+          max-width: 100%;
+          padding: 24px 20px;
+        }
+        .hw-icon-wrap {
+          width: 68px;
+          height: 68px;
+        }
+        .hw-icon-wrap svg {
+          width: 30px;
+          height: 30px;
+        }
+        .hw-step-title {
+          font-size: 17px;
+        }
+        .hw-step-description {
+          font-size: 13px;
+        }
+      }
+    </style>
   </head>
   <body>
     <!-- HERO SECTION -->
@@ -821,6 +1163,73 @@
       </div>
     </section>
 
+    <!-- Inserted: How It Works section (keeps hw- namespace) -->
+    <section class="hw-section" aria-label="How HiddenGem Works">
+      <div class="hw-container">
+        <div class="hw-pill">Simple Process</div>
+        <h2 class="hw-title">
+          How <span class="hw-title-underline">HiddenGem</span> Works
+        </h2>
+        <p class="hw-description">
+          Our platform makes it easy to discover authentic Sri Lankan experiences tailored to your preferences. Here's how it works:
+        </p>
+
+        <div class="hw-steps">
+          <article class="hw-step-card">
+            <div class="hw-icon-wrap">
+              <i data-lucide="search"></i>
+            </div>
+            <h3 class="hw-step-title">Search Your Destination</h3>
+            <p class="hw-step-description">
+              Select your preferred region in Sri Lanka and customize your preferences for a personalized experience.
+            </p>
+          </article>
+
+          <div class="hw-arrow">
+            <i data-lucide="arrow-right"></i>
+          </div>
+
+          <article class="hw-step-card">
+            <div class="hw-icon-wrap">
+              <i data-lucide="map-pin"></i>
+            </div>
+            <h3 class="hw-step-title">Discover Hidden Spots</h3>
+            <p class="hw-step-description">
+              Explore secret locations that only locals know about, from secluded beaches to breathtaking viewpoints.
+            </p>
+          </article>
+
+          <div class="hw-arrow">
+            <i data-lucide="arrow-right"></i>
+          </div>
+
+          <article class="hw-step-card">
+            <div class="hw-icon-wrap">
+              <i data-lucide="utensils"></i>
+            </div>
+            <h3 class="hw-step-title">Taste Local Cuisine</h3>
+            <p class="hw-step-description">
+              Get personalized food recommendations tailored to your spice preference and cultural background.
+            </p>
+          </article>
+
+          <div class="hw-arrow">
+            <i data-lucide="arrow-right"></i>
+          </div>
+
+          <article class="hw-step-card">
+            <div class="hw-icon-wrap">
+              <i data-lucide="heart"></i>
+            </div>
+            <h3 class="hw-step-title">Save Your Favorites</h3>
+            <p class="hw-step-description">
+              Create a collection of your favorite spots and dishes for your journey through Sri Lanka.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <!-- Scripts: hero animations + lucide icons -->
     <script>
       const animateIn = () => {
@@ -899,6 +1308,8 @@
 
       animateIn();
     </script>
+
+    <!-- Lucide icons (single inclusion) -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script>
       if (window.lucide && typeof window.lucide.createIcons === 'function') {
@@ -920,6 +1331,54 @@
           icon.style.filter = 'none';
         });
       });
+    </script>
+
+    <!-- How-it-works script: IntersectionObserver + icon hover (runs after Lucide) -->
+    <script>
+      // Intersection Observer for hw- scroll animations
+      (function(){
+        const observerOptions = {
+          threshold: 0.15,
+          rootMargin: '0px 0px -80px 0px'
+        };
+
+        // create observer if supported, otherwise reveal all immediately
+        if ('IntersectionObserver' in window) {
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+              }
+            });
+          }, observerOptions);
+
+          // Observe step cards and arrows
+          document.querySelectorAll('.hw-step-card').forEach(card => observer.observe(card));
+          document.querySelectorAll('.hw-arrow').forEach(arrow => observer.observe(arrow));
+        } else {
+          // Fallback: reveal all
+          document.querySelectorAll('.hw-step-card, .hw-arrow').forEach(el => el.classList.add('visible'));
+        }
+
+        // Icon hover scaling (works for lucide svg)
+        document.querySelectorAll('.hw-icon-wrap').forEach(iconWrap => {
+          iconWrap.addEventListener('mouseenter', function() {
+            const svg = this.querySelector('svg');
+            if (svg) {
+              svg.style.transition = 'transform 300ms ease';
+              svg.style.transform = 'scale(1.1)';
+            }
+          });
+
+          iconWrap.addEventListener('mouseleave', function() {
+            const svg = this.querySelector('svg');
+            if (svg) {
+              svg.style.transform = 'scale(1)';
+            }
+          });
+        });
+      })();
     </script>
   </body>
 </html>
