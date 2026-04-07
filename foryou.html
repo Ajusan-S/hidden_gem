@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Recommender — Hidden Gem Sri Lanka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0d1510;--ink2:#131d16;--ink3:#192219;
+  --surface:#f2ede3;--surface2:#e8e2d6;
+  --gold:#9a7238;--c-gold:#c4923a;--gold2:#b89050;--gold3:#cead6a;
+  --green:#284438;--green2:#3a5e50;
+  --white:#f8f5ef;
+  --neon:#39ff9a;--neon2:#00e5ff;--neon3:#c4923a;
+  --glass:rgba(255,255,255,0.04);
+  --glass2:rgba(255,255,255,0.07);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Jost',sans-serif;background:var(--ink);color:var(--surface);overflow-x:hidden;-webkit-font-smoothing:antialiased;cursor:none;min-height:100vh}
+
+/* CURSOR */
+#cdot{position:fixed;z-index:99999;width:7px;height:7px;background:var(--gold3);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);transition:opacity .3s;will-change:left,top}
+#cring{position:fixed;z-index:99998;width:32px;height:32px;border:1px solid rgba(184,144,80,.45);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s;will-change:left,top}
+#cring.big{width:54px;height:54px;border-color:var(--gold2)}
+@media(hover:none){#cdot,#cring{display:none}body{cursor:auto}}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:9000;padding:1.2rem 5%;display:flex;align-items:center;justify-content:space-between;background:rgba(13,21,16,.93);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06)}
+.nav-logo{text-decoration:none;line-height:1.1}
+.nav-logo-m{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:400;letter-spacing:.06em;color:var(--surface);display:block}
+.nav-logo-s{font-size:.52rem;letter-spacing:.44em;text-transform:uppercase;color:var(--gold2);font-weight:300;display:block}
+.nav-back{display:inline-flex;align-items:center;gap:.5rem;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(242,237,227,.5);text-decoration:none;transition:color .3s}
+.nav-back:hover{color:var(--gold2)}
+.nav-back::before{content:'←'}
+
+/* PAGE HEADER */
+.page-header{padding:7rem 5% 3rem;text-align:center;position:relative;overflow:hidden}
+.page-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(57,255,154,.04) 0%,transparent 65%)}
+.ph-pill{display:inline-flex;align-items:center;gap:.5rem;padding:.35rem 1.1rem;border:1px solid rgba(57,255,154,.18);border-radius:100px;background:rgba(57,255,154,.04);font-size:.63rem;letter-spacing:.22em;text-transform:uppercase;color:var(--neon);margin-bottom:1.4rem}
+.ph-dot{width:5px;height:5px;background:var(--neon);border-radius:50%;animation:blink 2s infinite;box-shadow:0 0 8px var(--neon)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.ph-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.8rem);font-weight:400;line-height:1.1;color:var(--surface);margin-bottom:.9rem}
+.ph-title em{font-style:italic;color:var(--gold3)}
+.ph-sub{font-size:.9rem;font-weight:300;color:rgba(242,237,227,.48);max-width:480px;margin:0 auto;line-height:1.85}
+
+/* FORM SECTION */
+.form-section{padding:2rem 5% 4rem;max-width:1100px;margin:0 auto}
+
+/* FORM GRID */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.2rem}
+@media(max-width:700px){.form-grid{grid-template-columns:1fr}}
+
+.form-group{position:relative}
+.form-label{display:block;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold2);margin-bottom:.55rem;font-weight:500}
+.form-input,.form-select{width:100%;padding:.85rem 1.1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:2px;color:var(--surface);font-family:'Jost',sans-serif;font-size:.88rem;font-weight:300;outline:none;transition:border-color .3s,background .3s,box-shadow .3s;appearance:none;-webkit-appearance:none}
+.form-input:focus,.form-select:focus{border-color:rgba(184,144,80,.4);background:rgba(255,255,255,.06);box-shadow:0 0 0 3px rgba(154,114,56,.06)}
+.form-select option{background:#131d16;color:var(--surface)}
+.select-arrow{position:absolute;right:1rem;top:50%;margin-top:.6rem;pointer-events:none;color:var(--gold2);font-size:.7rem}
+
+/* INTERESTS */
+.interests-wrap{margin-bottom:1.2rem}
+.interests-grid{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:.55rem}
+.int-chip{padding:.42rem 1.1rem;border-radius:100px;border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(242,237,227,.48);font-family:'Jost',sans-serif;font-size:.72rem;font-weight:300;letter-spacing:.06em;cursor:pointer;transition:all .3s;user-select:none;display:inline-flex;align-items:center;gap:.38rem}
+.int-chip:hover{border-color:rgba(154,114,56,.35);color:var(--surface)}
+.int-chip.active{background:rgba(154,114,56,.14);border-color:var(--gold2);color:var(--gold3);box-shadow:0 0 12px rgba(154,114,56,.12)}
+.int-chip .chip-ico{font-size:.85rem}
+
+/* BUDGET SLIDER */
+.budget-wrap{margin-bottom:1.2rem}
+.budget-display{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+.budget-val{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:400;color:var(--gold3)}
+.budget-per{font-size:.65rem;color:rgba(242,237,227,.35);letter-spacing:.08em}
+input[type=range]{width:100%;height:2px;background:rgba(255,255,255,.1);appearance:none;-webkit-appearance:none;outline:none;border-radius:1px}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:18px;height:18px;border-radius:50%;background:var(--gold2);cursor:pointer;box-shadow:0 0 12px rgba(184,144,80,.3);border:2px solid var(--ink)}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--gold2);cursor:pointer;border:2px solid var(--ink)}
+.budget-labels{display:flex;justify-content:space-between;margin-top:.4rem}
+.budget-labels span{font-size:.6rem;color:rgba(242,237,227,.28);letter-spacing:.06em}
+
+/* DAYS */
+.days-grid{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.55rem}
+.day-chip{padding:.42rem 1rem;border-radius:2px;border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(242,237,227,.45);font-family:'Jost',sans-serif;font-size:.75rem;cursor:pointer;transition:all .3s;min-width:52px;text-align:center}
+.day-chip:hover{border-color:rgba(154,114,56,.35);color:var(--surface)}
+.day-chip.active{background:rgba(154,114,56,.14);border-color:var(--gold2);color:var(--gold3)}
+
+/* SUBMIT */
+.submit-wrap{display:flex;justify-content:center;padding-top:.5rem}
+.btn-ai{position:relative;padding:1.05rem 3.5rem;background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:'Jost',sans-serif;font-size:.78rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;border-radius:1px;cursor:pointer;overflow:hidden;transition:color .4s;display:inline-flex;align-items:center;gap:.7rem}
+.btn-ai::before{content:'';position:absolute;inset:0;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .45s cubic-bezier(.4,0,.2,1)}
+.btn-ai:hover{color:var(--ink)}
+.btn-ai:hover::before{transform:scaleX(1)}
+.btn-ai span,.btn-ai svg{position:relative;z-index:1}
+.btn-ai svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round}
+
+/* AI LOADER */
+#ai-loader{display:none;padding:4rem 5%;text-align:center;max-width:700px;margin:0 auto}
+#ai-loader.active{display:block}
+.loader-orb{width:100px;height:100px;border-radius:50%;border:1px solid rgba(57,255,154,.15);position:relative;margin:0 auto 2rem;animation:orbSpin 8s linear infinite}
+.loader-orb::before{content:'';position:absolute;inset:8px;border-radius:50%;border:1px solid rgba(184,144,80,.2);animation:orbSpin 5s linear infinite reverse}
+.loader-orb::after{content:'';position:absolute;inset:22px;border-radius:50%;background:radial-gradient(circle,rgba(57,255,154,.12),rgba(154,114,56,.08));animation:orbPulse 2s ease-in-out infinite}
+@keyframes orbSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes orbPulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.12);opacity:1}}
+.loader-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:400;color:var(--surface);margin-bottom:.6rem}
+.loader-sub{font-size:.8rem;font-weight:300;color:rgba(242,237,227,.4);margin-bottom:2rem}
+.loader-steps{display:flex;flex-direction:column;gap:.6rem;text-align:left;max-width:340px;margin:0 auto}
+.lstep{display:flex;align-items:center;gap:.8rem;font-size:.78rem;color:rgba(242,237,227,.35);transition:color .4s}
+.lstep.done{color:rgba(57,255,154,.7)}
+.lstep.active{color:var(--surface)}
+.lstep-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.15);flex-shrink:0;transition:background .4s}
+.lstep.done .lstep-dot{background:var(--neon);box-shadow:0 0 8px var(--neon)}
+.lstep.active .lstep-dot{background:var(--gold2);box-shadow:0 0 8px var(--gold2);animation:blink 1s infinite}
+
+/* RESULTS */
+#results-section{display:none;padding:2rem 5% 5rem;max-width:1200px;margin:0 auto}
+#results-section.active{display:block}
+
+.result-header{margin-bottom:2.5rem}
+.result-label{font-size:.6rem;letter-spacing:.38em;text-transform:uppercase;color:var(--gold2);margin-bottom:.5rem}
+.result-title{font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3.5vw,2.5rem);font-weight:400;color:var(--surface);margin-bottom:.5rem;line-height:1.15}
+.result-title em{font-style:italic;color:var(--gold3)}
+.result-meta{font-size:.8rem;font-weight:300;color:rgba(242,237,227,.38)}
+
+/* AI INSIGHT BOX */
+.ai-insight{background:rgba(57,255,154,.04);border:1px solid rgba(57,255,154,.12);border-radius:2px;padding:1.3rem 1.5rem;margin-bottom:2.5rem;position:relative;overflow:hidden}
+.ai-insight::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--neon),transparent)}
+.ai-insight-label{font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--neon);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+.ai-insight-label::before{content:'✦';font-size:.7rem}
+.ai-insight-text{font-size:.85rem;font-weight:300;color:rgba(242,237,227,.65);line-height:1.85}
+
+/* PLACES GRID */
+.places-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;margin-bottom:3rem}
+@media(max-width:960px){.places-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.places-grid{grid-template-columns:1fr}}
+
+.place-card{background:var(--ink3);border:1px solid rgba(255,255,255,.06);border-radius:2px;overflow:hidden;cursor:pointer;transition:box-shadow .4s,transform .3s;opacity:0;transform:translateY(24px);animation:cardIn .6s forwards}
+@keyframes cardIn{to{opacity:1;transform:translateY(0)}}
+.place-card:hover{box-shadow:0 18px 55px rgba(0,0,0,.45),0 0 0 1px rgba(154,114,56,.2)}
+.pc-img-wrap{overflow:hidden;aspect-ratio:4/3;position:relative}
+.pc-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s cubic-bezier(.4,0,.2,1),filter .5s;filter:brightness(.75) saturate(.9)}
+.place-card:hover .pc-img{transform:scale(1.07);filter:brightness(.62) saturate(1.1)}
+.pc-badges{position:absolute;top:.7rem;left:.7rem;display:flex;gap:.4rem;flex-wrap:wrap}
+.pc-badge{padding:.18rem .65rem;border-radius:100px;font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;backdrop-filter:blur(10px);background:rgba(13,21,16,.75);border:1px solid rgba(255,255,255,.1);color:rgba(200,208,188,.78)}
+.pc-badge.match{background:rgba(57,255,154,.1);border-color:rgba(57,255,154,.25);color:var(--neon)}
+.pc-score{position:absolute;top:.7rem;right:.7rem;width:38px;height:38px;border-radius:50%;background:rgba(13,21,16,.82);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.85rem;font-weight:400;color:var(--gold3);border:1px solid rgba(154,114,56,.2)}
+.pc-body{padding:1.2rem 1.3rem 1.4rem}
+.pc-body::before{content:'';display:block;width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(154,114,56,.18),transparent);margin-bottom:.9rem}
+.pc-tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.55rem}
+.pc-tag{padding:.14rem .6rem;border-radius:100px;font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;background:rgba(154,114,56,.1);border:1px solid rgba(154,114,56,.16);color:var(--gold2)}
+.pc-name{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:400;color:var(--surface);margin-bottom:.3rem;line-height:1.2}
+.pc-region{font-size:.7rem;color:rgba(242,237,227,.35);margin-bottom:.5rem}
+.pc-desc{font-size:.77rem;font-weight:300;color:rgba(242,237,227,.45);line-height:1.75;margin-bottom:.9rem}
+.pc-why{font-size:.72rem;font-weight:300;color:rgba(57,255,154,.6);line-height:1.6;margin-bottom:.9rem;padding:.5rem .8rem;background:rgba(57,255,154,.03);border-left:2px solid rgba(57,255,154,.2);border-radius:0 2px 2px 0}
+.pc-foot{display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+.pc-cost{font-size:.72rem;color:var(--gold2)}
+.pc-dur{font-size:.68rem;color:rgba(242,237,227,.28)}
+.pc-rating{font-size:.72rem;color:var(--gold2)}
+
+/* TRIP PLAN */
+.trip-plan{margin-top:1rem}
+.tp-header{margin-bottom:1.8rem}
+.tp-label{font-size:.58rem;letter-spacing:.38em;text-transform:uppercase;color:var(--neon);margin-bottom:.45rem}
+.tp-title{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,3vw,2.1rem);font-weight:400;color:var(--surface)}
+.tp-title em{font-style:italic;color:var(--gold3)}
+.tp-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin-bottom:2rem}
+@media(max-width:700px){.tp-summary{grid-template-columns:repeat(2,1fr)}}
+.tps-item{padding:.9rem 1rem;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.055);border-radius:2px;text-align:center}
+.tps-val{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:400;color:var(--surface);display:block;margin-bottom:.2rem}
+.tps-lbl{font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(242,237,227,.32)}
+
+/* DAY CARDS */
+.day-cards{display:flex;flex-direction:column;gap:1rem}
+.day-card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.055);border-radius:2px;overflow:hidden;transition:border-color .3s}
+.day-card:hover{border-color:rgba(154,114,56,.18)}
+.dc-head{padding:1rem 1.3rem;display:flex;align-items:center;gap:1rem;cursor:pointer;user-select:none}
+.dc-num{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:400;color:rgba(154,114,56,.25);line-height:1;min-width:2.2rem}
+.dc-info{flex:1}
+.dc-day{font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold2);margin-bottom:.15rem}
+.dc-places{font-family:'Playfair Display',serif;font-size:1rem;font-weight:400;color:var(--surface)}
+.dc-meta{font-size:.72rem;color:rgba(242,237,227,.3)}
+.dc-toggle{width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:.7rem;color:rgba(242,237,227,.35);transition:all .3s;flex-shrink:0}
+.day-card.open .dc-toggle{transform:rotate(180deg);border-color:var(--gold2);color:var(--gold2)}
+.dc-body{display:none;padding:0 1.3rem 1.3rem}
+.day-card.open .dc-body{display:block}
+.dc-timeline{display:flex;flex-direction:column;gap:.85rem}
+.dct-item{display:flex;gap:.9rem;align-items:flex-start}
+.dct-time-col{display:flex;flex-direction:column;align-items:center;min-width:60px}
+.dct-time{font-size:.65rem;letter-spacing:.08em;color:var(--gold2);font-weight:500;white-space:nowrap}
+.dct-line{flex:1;width:1px;background:rgba(255,255,255,.07);margin-top:.3rem;min-height:20px}
+.dct-content{padding-bottom:.3rem;flex:1}
+.dct-act{font-size:.83rem;font-weight:500;color:var(--surface);margin-bottom:.2rem}
+.dct-note{font-size:.75rem;font-weight:300;color:rgba(242,237,227,.42);line-height:1.6}
+.dct-cost{font-size:.68rem;color:var(--gold2);margin-top:.18rem}
+
+/* BUDGET BREAKDOWN */
+.budget-breakdown{margin-top:2rem;padding:1.4rem;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:2px}
+.bb-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:400;color:var(--surface);margin-bottom:1.1rem}
+.bb-items{display:flex;flex-direction:column;gap:.55rem}
+.bb-row{display:flex;align-items:center;gap:.8rem;gap:.8rem}
+.bb-label{font-size:.75rem;color:rgba(242,237,227,.5);min-width:130px}
+.bb-bar-wrap{flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.bb-bar{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--gold),var(--gold3));transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.bb-amt{font-size:.75rem;color:var(--gold2);min-width:70px;text-align:right}
+.bb-total{margin-top:.9rem;padding-top:.9rem;border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center}
+.bb-total-lbl{font-size:.8rem;color:var(--surface)}
+.bb-total-amt{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gold3)}
+
+/* TIPS */
+.tips-box{margin-top:1.5rem;padding:1.3rem 1.4rem;background:rgba(154,114,56,.04);border:1px solid rgba(154,114,56,.12);border-radius:2px}
+.tips-title{font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold2);margin-bottom:.8rem}
+.tips-list{display:flex;flex-direction:column;gap:.5rem}
+.tip-item{display:flex;gap:.7rem;align-items:flex-start;font-size:.78rem;font-weight:300;color:rgba(242,237,227,.55);line-height:1.6}
+.tip-item::before{content:'→';color:var(--gold2);font-size:.7rem;margin-top:.08rem;flex-shrink:0}
+
+/* NEW SEARCH */
+.new-search-wrap{text-align:center;margin-top:3rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,.06)}
+.btn-new{padding:.82rem 2.2rem;background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(242,237,227,.55);font-family:'Jost',sans-serif;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;border-radius:1px;cursor:pointer;transition:all .3s}
+.btn-new:hover{border-color:var(--gold2);color:var(--gold2)}
+
+/* RESPONSIVE MISC */
+@media(max-width:768px){
+  .page-header{padding:6rem 5% 2rem}
+  .tp-title{font-size:1.4rem}
+}
+@media(max-width:480px){
+  .form-section,.results-section{padding-left:4%;padding-right:4%}
+  .pc-name{font-size:1.1rem}
+}
+
+/* REVEAL */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1)}
+.rv.in{opacity:1;transform:translateY(0)}
+
+/* SEPARATOR */
+.sep{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(154,114,56,.18),transparent);margin:2.5rem 0}
+
+/* GLOW LINE */
+.glow-line{width:60px;height:1px;background:linear-gradient(90deg,var(--neon),transparent);margin:0 auto 1.5rem;opacity:.5}
+</style>
+</head>
+<body>
+
+<div id="cdot"></div>
+<div id="cring"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="nav-logo-m">Hidden Gem</span>
+    <span class="nav-logo-s">Sri Lanka</span>
+  </a>
+  <a href="index.html" class="nav-back">Back to Home</a>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="glow-line"></div>
+  <div class="ph-pill"><span class="ph-dot"></span>AI-Powered</div>
+  <h1 class="ph-title">Find your <em>perfect</em> Sri Lanka</h1>
+  <p class="ph-sub">Tell our AI a bit about yourself. It'll hand-pick the hidden gems that match who you are — and build you a real itinerary.</p>
+</div>
+
+<!-- FORM -->
+<div class="form-section" id="form-section">
+
+  <div class="form-grid">
+    <div class="form-group">
+      <label class="form-label">Your Country</label>
+      <select class="form-select" id="inp-country">
+        <option value="">Select your country…</option>
+        <option value="US">🇺🇸 United States</option>
+        <option value="UK">🇬🇧 United Kingdom</option>
+        <option value="DE">🇩🇪 Germany</option>
+        <option value="FR">🇫🇷 France</option>
+        <option value="AU">🇦🇺 Australia</option>
+        <option value="JP">🇯🇵 Japan</option>
+        <option value="CN">🇨🇳 China</option>
+        <option value="IN">🇮🇳 India</option>
+        <option value="KR">🇰🇷 South Korea</option>
+        <option value="SE">🇸🇪 Sweden</option>
+        <option value="NL">🇳🇱 Netherlands</option>
+        <option value="CA">🇨🇦 Canada</option>
+        <option value="IT">🇮🇹 Italy</option>
+        <option value="ES">🇪🇸 Spain</option>
+        <option value="CH">🇨🇭 Switzerland</option>
+        <option value="SG">🇸🇬 Singapore</option>
+        <option value="AE">🇦🇪 UAE</option>
+        <option value="RU">🇷🇺 Russia</option>
+        <option value="BR">🇧🇷 Brazil</option>
+        <option value="ZA">🇿🇦 South Africa</option>
+        <option value="LK">🇱🇰 Sri Lanka</option>
+        <option value="OTHER">🌍 Other</option>
+      </select>
+      <span class="select-arrow">▾</span>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Travel Style</label>
+      <select class="form-select" id="inp-style">
+        <option value="adventurous">🧗 Adventurous Explorer</option>
+        <option value="cultural">🏛️ Cultural Immersion</option>
+        <option value="relaxed">🧘 Relaxed & Slow Travel</option>
+        <option value="luxury">✨ Luxury Seeker</option>
+        <option value="budget">🎒 Budget Backpacker</option>
+        <option value="family">👨‍👩‍👧 Family Friendly</option>
+      </select>
+      <span class="select-arrow">▾</span>
+    </div>
+  </div>
+
+  <!-- INTERESTS -->
+  <div class="interests-wrap">
+    <label class="form-label">Your Interests <span style="color:rgba(242,237,227,.3);font-size:.58rem;letter-spacing:.1em;text-transform:lowercase;font-weight:300">(pick all that apply)</span></label>
+    <div class="interests-grid" id="interests-grid">
+      <div class="int-chip" data-int="beach"><span class="chip-ico">🏖️</span> Beaches</div>
+      <div class="int-chip" data-int="wildlife"><span class="chip-ico">🐘</span> Wildlife</div>
+      <div class="int-chip" data-int="temples"><span class="chip-ico">🛕</span> Temples & Ruins</div>
+      <div class="int-chip" data-int="food"><span class="chip-ico">🍛</span> Local Food</div>
+      <div class="int-chip" data-int="hiking"><span class="chip-ico">🥾</span> Hiking & Trekking</div>
+      <div class="int-chip" data-int="culture"><span class="chip-ico">🎭</span> Culture & Heritage</div>
+      <div class="int-chip" data-int="diving"><span class="chip-ico">🤿</span> Diving & Snorkelling</div>
+      <div class="int-chip" data-int="surfing"><span class="chip-ico">🏄</span> Surfing</div>
+      <div class="int-chip" data-int="tea"><span class="chip-ico">🍵</span> Tea Country</div>
+      <div class="int-chip" data-int="village"><span class="chip-ico">🏡</span> Village Life</div>
+      <div class="int-chip" data-int="photography"><span class="chip-ico">📷</span> Photography</div>
+      <div class="int-chip" data-int="whale"><span class="chip-ico">🐋</span> Whale Watching</div>
+      <div class="int-chip" data-int="yoga"><span class="chip-ico">🧘</span> Yoga & Wellness</div>
+      <div class="int-chip" data-int="nightlife"><span class="chip-ico">🌙</span> Nightlife</div>
+      <div class="int-chip" data-int="history"><span class="chip-ico">📜</span> History & Archaeology</div>
+    </div>
+  </div>
+
+  <!-- BUDGET -->
+  <div class="budget-wrap">
+    <label class="form-label">Daily Budget (USD per person)</label>
+    <div class="budget-display">
+      <span class="budget-val" id="budget-val">$75</span>
+      <span class="budget-per">per day · all inclusive</span>
+    </div>
+    <input type="range" id="budget-slider" min="20" max="500" value="75" step="5">
+    <div class="budget-labels"><span>$20 Budget</span><span>$150 Mid</span><span>$500+ Luxury</span></div>
+  </div>
+
+  <!-- DAYS -->
+  <div class="interests-wrap">
+    <label class="form-label">Number of Days</label>
+    <div class="days-grid" id="days-grid">
+      <div class="day-chip" data-days="3">3 days</div>
+      <div class="day-chip" data-days="5">5 days</div>
+      <div class="day-chip active" data-days="7">7 days</div>
+      <div class="day-chip" data-days="10">10 days</div>
+      <div class="day-chip" data-days="14">14 days</div>
+      <div class="day-chip" data-days="21">21 days</div>
+    </div>
+  </div>
+
+  <div class="sep"></div>
+
+  <div class="submit-wrap">
+    <button class="btn-ai" id="btn-generate" onclick="runAI()">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <span>Generate My Trip</span>
+    </button>
+  </div>
+</div>
+
+<!-- AI LOADER -->
+<div id="ai-loader">
+  <div class="loader-orb"></div>
+  <div class="loader-title">Analysing your preferences…</div>
+  <div class="loader-sub" id="loader-sub">Our AI is mapping 340+ hidden gems to your profile</div>
+  <div class="loader-steps">
+    <div class="lstep" id="ls0"><div class="lstep-dot"></div>Reading your travel profile</div>
+    <div class="lstep" id="ls1"><div class="lstep-dot"></div>Matching interests to hidden gems</div>
+    <div class="lstep" id="ls2"><div class="lstep-dot"></div>Filtering for your budget & duration</div>
+    <div class="lstep" id="ls3"><div class="lstep-dot"></div>Considering cultural context</div>
+    <div class="lstep" id="ls4"><div class="lstep-dot"></div>Building your personalised itinerary</div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="results-section">
+  <div class="result-header rv">
+    <div class="result-label">Your Personalised Recommendations</div>
+    <h2 class="result-title" id="result-title">Hidden gems picked <em>for you</em></h2>
+    <div class="result-meta" id="result-meta"></div>
+  </div>
+
+  <div class="ai-insight rv" id="ai-insight">
+    <div class="ai-insight-label">AI Insight</div>
+    <div class="ai-insight-text" id="ai-insight-text"></div>
+  </div>
+
+  <div class="places-grid" id="places-grid"></div>
+
+  <div class="sep"></div>
+
+  <div class="trip-plan" id="trip-plan">
+    <div class="tp-header rv">
+      <div class="tp-label">Your AI Itinerary</div>
+      <h3 class="tp-title" id="tp-title">Your <em>perfect</em> route</h3>
+    </div>
+    <div class="tp-summary" id="tp-summary"></div>
+    <div class="day-cards" id="day-cards"></div>
+    <div class="budget-breakdown" id="budget-breakdown"></div>
+    <div class="tips-box" id="tips-box"></div>
+  </div>
+
+  <div class="new-search-wrap">
+    <button class="btn-new" onclick="resetAll()">← Start a New Search</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer style="background:var(--ink2);border-top:1px solid rgba(255,255,255,.055);padding:2rem 5%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-top:2rem">
+  <div style="font-family:'Playfair Display',serif;font-size:1rem;color:rgba(242,237,227,.5);letter-spacing:.06em">Hidden Gem Sri Lanka</div>
+  <div style="font-size:.62rem;color:rgba(242,237,227,.22)">© 2026 Hidden Gem Sri Lanka · AI Recommendation Engine</div>
+</footer>
+
+<script>
+/* ─── CURSOR ─── */
+const dot=document.getElementById('cdot'),ring=document.getElementById('cring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+document.querySelectorAll('a,button,.int-chip,.day-chip,.btn-ai,.btn-new,.place-card,.day-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>ring.classList.add('big'));
+  el.addEventListener('mouseleave',()=>ring.classList.remove('big'));
+});
+(function aC(){dot.style.left=mx+'px';dot.style.top=my+'px';rx+=(mx-rx)*.13;ry+=(my-ry)*.13;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(aC);})();
+
+/* ─── BUDGET SLIDER ─── */
+const slider=document.getElementById('budget-slider');
+const budVal=document.getElementById('budget-val');
+slider.addEventListener('input',()=>{budVal.textContent='$'+slider.value});
+
+/* ─── INTEREST CHIPS ─── */
+document.querySelectorAll('.int-chip').forEach(c=>{
+  c.addEventListener('click',()=>c.classList.toggle('active'));
+});
+
+/* ─── DAY CHIPS ─── */
+document.querySelectorAll('.day-chip').forEach(c=>{
+  c.addEventListener('click',()=>{
+    document.querySelectorAll('.day-chip').forEach(x=>x.classList.remove('active'));
+    c.classList.add('active');
+  });
+});
+
+/* ─── DATABASE: 30 REAL SRI LANKA PLACES ─── */
+const PLACES = [
+  {
+    id:1,name:"Ritigala Forest Monastery",region:"North Central",
+    tags:["history","temples","culture"],
+    interests:["temples","history","culture","photography"],
+    budget_min:20,budget_max:500,
+    img:"https://images.unsplash.com/photo-1588598198321-9735fd52430d?w=600&q=75&auto=format&fit=crop",
+    desc:"Ancient rock-cut ruins draped in mist within a strict nature reserve. Utterly untouched and mystical.",
+    cost_entry:"$3",cost_day:"$5–15",rating:"4.9",
+    styles:["adventurous","cultural","relaxed"],
+    duration:"2–4 hrs",
+    trip_note:"Arrive early for mist. Hire a local guide at the gate.",
+    why_prefix:"Because travellers who love ancient history",
+    days_needed:0.5
+  },
+  {
+    id:2,name:"Rekawa Lagoon & Turtle Beach",region:"Southern Province",
+    tags:["beach","wildlife","nature"],
+    interests:["wildlife","beach","photography"],
+    budget_min:20,budget_max:500,
+    img:"https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=600&q=75&auto=format&fit=crop",
+    desc:"Pristine lagoon with nesting leatherback sea turtles. No tour buses — just silence, stars, and the ocean.",
+    cost_entry:"$5",cost_day:"$10–20",rating:"4.8",
+    styles:["adventurous","relaxed","cultural"],
+    duration:"Evening + overnight",
+    trip_note:"Night visits only for turtle watching. Book with local conservation project.",
+    why_prefix:"As a nature lover",
+    days_needed:1
+  },
+  {
+    id:3,name:"Bambarakanda Falls",region:"Uva Province",
+    tags:["waterfall","hiking","nature"],
+    interests:["hiking","photography","nature"],
+    budget_min:20,budget_max:500,
+    img:"https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&q=75&auto=format&fit=crop",
+    desc:"Sri Lanka's tallest waterfall reached via a misty tea-estate trail. Swimming hole at the base is rarely crowded.",
+    cost_entry:"Free",cost_day:"$5–10",rating:"5.0",
+    styles:["adventurous","budget","cultural"],
+    duration:"Half day",
+    trip_note:"Best after monsoon season (Oct–Dec). Trail is 3km return.",
+    why_prefix:"For outdoor seekers",
+    days_needed:0.5
+  },
+  {
+    id:4,name:"Mulkirigala Rock Temple",region:"Southern Province",
+    tags:["temple","history","culture"],
+    interests:["temples","history","culture","photography"],
+    budget_min:20,budget_max:500,
+    img:"https://images.unsplash.com/photo-1609948543911-c5a2bf3f7bb0?w=600&q=75&auto=format&fit=crop",
+    desc:"Seven cave temples ascending a granite outcrop with 2,000-year-old murals. Sri Lanka's hidden Sigiriya.",
+    cost_entry:"$4",cost_day:"$5–10",rating:"4.7",
+    styles:["cultural","relaxed","adventurous"],
+    duration:"2–3 hrs",
+    trip_note:"Combine with a drive through the south coast.",
+    why_prefix:"History enthusiasts will love",
+    days_needed:0.5
+  },
+  {
+    id:5,name:"Kumana Bird Sanctuary",region:"Eastern Province",
+    tags:["wildlife","nature","photography"],
+    interests:["wildlife","photography","nature"],
+    budget_min:25,budget_max:500,
+    img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&q=75&auto=format&fit=crop",
+    desc:"Remote estuary at the island's eastern tip, home to painted storks, pelicans and saltwater crocodiles.",
+    cost_entry:"$15 safari",cost_day:"$20–40",rating:"4.8",
+    styles:["adventurous","cultural","relaxed"],
+    duration:"Full day",
+    trip_note:"Jeep safari essential. Best April–July for bird nesting.",
+    why_prefix:"Wildlife photographers will treasure",
+    days_needed:1
+  },
+  {
+    id:6,name:"Kalpitiya Lagoon & Dolphins",region:"North Western",
+    tags:["beach","wildlife","water_sports"],
+    interests:["whale","diving","beach","photography"],
+    budget_min:30,budget_max:500,
+    img:"https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600&q=75&auto=format&fit=crop",
+    desc:"Spinner dolphin pods of 1000+ visit at dawn. Kitesurfers and snorkellers have the lagoon almost to themselves.",
+    cost_entry:"$20 boat",cost_day:"$25–60",rating:"4.6",
+    styles:["adventurous","relaxed","luxury"],
+    duration:"Full day",
+    trip_note:"Dolphin boats leave at 6am. Winds for kitesurfing peak Dec–Mar.",
+    why_prefix:"Ocean lovers from",
+    days_needed:1
+  },
+  {
+    id:7,name:"Knuckles Mountain Range",region:"Central Province",
+    tags:["hiking","nature","photography","village"],
+    interests:["hiking","photography","village","wildlife"],
+    budget_min:25,budget_max:500,
+    img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=75&auto=format&fit=crop",
+    desc:"UNESCO cloud forest with over 30 peaks, endemic species, and remote Kandyan villages accessible only on foot.",
+    cost_entry:"$8 permit",cost_day:"$15–35",rating:"4.9",
+    styles:["adventurous","budget","cultural"],
+    duration:"2–4 days",
+    trip_note:"Mandatory guide for multi-day treks. Carry all food — no shops inside.",
+    why_prefix:"Serious trekkers will find their paradise",
+    days_needed:2
+  },
+  {
+    id:8,name:"Jaffna Peninsula & Nainativu",region:"Northern Province",
+    tags:["culture","history","temples","food"],
+    interests:["culture","temples","history","food"],
+    budget_min:20,budget_max:500,
+    img:"https://images.unsplash.com/photo-1518002054494-3a6f94352e9d?w=600&q=75&auto=format&fit=crop",
+    desc:"The Tamil heartland — ancient Naga temples, Dutch forts, fiery cuisine, and a boat ride to the sacred Nainativu island.",
+    cost_entry:"$2–10",cost_day:"$15–30",rating:"4.9",
+    styles:["cultural","relaxed","budget"],
+    duration:"2–3 days",
+    trip_note:"Ferry to Nainativu runs mornings only. Try the crab curry on KKS Road.",
+    why_prefix:"Culture seekers will be transformed by",
+    days_needed:2
+  },
+  {
+    id:9,name:"Ella Rock & Little Adam's Peak",region:"Uva Province",
+    tags:["hiking","tea","photography","village"],
+    interests:["hiking","tea","photography","village"],
+    budget_min:20,budget_max:500,
+    img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=75&auto=format&fit=crop",
+    desc:"The jewel of the hill country — sunrise hikes above sea of clouds, hanging bridges, and the Nine Arch Viaduct.",
+    cost_entry:"Free",cost_day:"$15–50",rating:"4.8",
+    styles:["adventurous","relaxed","cultural"],
+    duration:"1–2 days",
+    trip_note:"Take the train from Kandy — one of the world's most scenic rail journeys.",
+    why_prefix:"Hill country enthusiasts from",
+    days_needed:1.5
+  },
+  {
+    id:10,name:"Yala National Park – Block V",region:"Southern Province",
+    tags:["wildlife","safari","photography"],
+    interests:["wildlife","photography"],
+    budget_min:60,budget_max:500,
+    img:"https://images.unsplash.com/photo-1564760055775-d63b17a55c44?w=600&q=75&auto=format&fit=crop",
+    desc:"The lesser-visited Block V has the leopard density of main Yala with a fraction of the jeeps. Pure wilderness.",
+    cost_entry:"$30+ safari",cost_day:"$60–120",rating:"4.9",
+    styles:["adventurous","luxury","cultural"],
+    duration:"Full day / overnight",
+    trip_note:"Book with Wilderness & Yala safaris for Block V access. Leopards most active dawn.",
+    why_prefix:"Wildlife devotees who want to avoid crowds",
+    days_needed:1
+  },
+  {
+    id:11,name:"Trincomalee Beaches & Pigeon Island",region:"Eastern Province",
+    tags:["beach","diving","wildlife","snorkelling"],
+    interests:["beach","diving","whale","surfing"],
+    budget_min:20,budget_max:500,
+    img:"https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?w=600&q=75&auto=format&fit=crop",
+    desc:"Pristine turquoise bays with blacktip sharks, hard coral gardens, and the chance to swim with whale sharks in season.",
+    cost_entry:"$5 park",cost_day:"$20–50",rating:"4.8",
+    styles:["adventurous","relaxed","budget"],
+    duration:"2–3 days",
+    trip_note:"Best May–October. Whale shark season is May–June. Stay in Uppuveli.",
+    why_prefix:"Divers and beach lovers from",
+    days_needed:2
+  },
+  {
+    id:12,name:"Arugam Bay – The Main Point",region:"Eastern Province",
+    tags:["surfing","beach","food","nightlife"],
+    interests:["surfing","beach","food","nightlife"],
+    budget_min:20,budget_max:200,
+    img:"https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=600&q=75&auto=format&fit=crop",
+    desc:"Asia's top surfing destination for right-hand point breaks. Laid-back, cheap, and beloved by long-termers.",
+    cost_entry:"Free",cost_day:"$15–40",rating:"4.7",
+    styles:["adventurous","budget","relaxed"],
+    duration:"3–7 days",
+    trip_note:"Surf season: April–October. Crocodile Rock is the local's spot.",
+    why_prefix:"Surfers and free spirits from",
+    days_needed:3
+  },
+  {
+    id:13,name:"Sigiriya & Pidurangala Rock",region:"North Central",
+    tags:["history","temples","photography","hiking"],
+    interests:["history","temples","photography","hiking"],
+    budget_min:20,budget_max:500,
+    img:"https://images.unsplash.com/photo-1588598198321-9735fd52430d?w=600&q=75&auto=format&fit=crop",
+    desc:"Climb Pidurangala at sunrise for the best view of Sigiriya Lion Rock — without paying the $30 entry or the crowds.",
+    cost_entry:"$2 Pidurangala",cost_day:"$10–25",rating:"5.0",
+    styles:["adventurous","cultural","budget"],
+    duration:"Half day",
+    trip_note:"Start Pidurangala at 5:30am for sunrise. Bring a torch for the last scramble.",
+    why_prefix:"History and photography enthusiasts",
+    days_needed:0.5
+  },
+  {
+    id:14,name:"Horton Plains & World's End",region:"Central Province",
+    tags:["hiking","wildlife","photography","nature"],
+    interests:["hiking","wildlife","photography"],
+    budget_min:30,budget_max:500,
+    img:"https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&q=75&auto=format&fit=crop",
+    desc:"A high plateau at 2,100m with sheer 870m cliff drops, sambar deer, and leopards in the morning mist.",
+    cost_entry:"$25 entry",cost_day:"$30–60",rating:"4.9",
+    styles:["adventurous","cultural"],
+    duration:"Half day (leave by 9am before mist)",
+    trip_note:"Entry closes at 9am for clear views. Stay in Nuwara Eliya the night before.",
+    why_prefix:"Highland trekkers from",
+    days_needed:0.5
+  },
+  {
+    id:15,name:"Galle Fort & Secret Ramparts",region:"Southern Province",
+    tags:["history","culture","food","photography"],
+    interests:["history","culture","food","photography"],
+    budget_min:20,budget_max:500,
+    img:"https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600&q=75&auto=format&fit=crop",
+    desc:"17th-century Dutch fort with boutique cafés, hidden courtyards and sunset rampart walks that most tour groups skip.",
+    cost_entry:"Free",cost_day:"$20–80",rating:"4.8",
+    styles:["cultural","luxury","relaxed","family"],
+    duration:"1–2 days",
+    trip_note:"Walk the ramparts at 5:30pm for golden hour. Try Pedlar's Inn for local gin.",
+    why_prefix:"Heritage lovers and foodies from",
+    days_needed:1
+  },
+  {
+    id:16,name:"Nuwara Eliya Tea Estates",region:"Central Province",
+    tags:["tea","culture","photography","village"],
+    interests:["tea","village","culture","photography"],
+    budget_min:20,budget_max:300,
+    img:"https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=600&q=75&auto=format&fit=crop",
+    desc:"Stay with a tea planting family and handpick Ceylon tea at dawn. Colonial club cricket on manicured greens.",
+    cost_entry:"Free",cost_day:"$15–60",rating:"4.7",
+    styles:["cultural","relaxed","luxury"],
+    duration:"1–2 days",
+    trip_note:"Book a factory tour directly — avoid tour buses. Try Pedro Estate.",
+    why_prefix:"Tea enthusiasts and culture lovers",
+    days_needed:1
+  },
+  {
+    id:17,name:"Mirissa Whale Watching",region:"Southern Province",
+    tags:["whale","wildlife","beach"],
+    interests:["whale","wildlife","beach","photography"],
+    budget_min:30,budget_max:500,
+    img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&q=75&auto=format&fit=crop",
+    desc:"Best blue whale watching in Asia. Spinner dolphins escort your boat as sperm whales breach offshore.",
+    cost_entry:"$30 boat",cost_day:"$30–50",rating:"4.8",
+    styles:["adventurous","luxury","relaxed"],
+    duration:"Half day",
+    trip_note:"Season: November–April. Book Raja & The Whales for best sustainability.",
+    why_prefix:"Ocean lovers who dream of blue whales",
+    days_needed:0.5
+  },
+  {
+    id:18,name:"Udawalawe National Park",region:"Sabaragamuwa",
+    tags:["wildlife","photography","safari"],
+    interests:["wildlife","photography"],
+    budget_min:40,budget_max:500,
+    img:"https://images.unsplash.com/photo-1564760055775-d63b17a55c44?w=600&q=75&auto=format&fit=crop",
+    desc:"Guaranteed elephant sightings in open grasslands — herds of 150+ cross the plains at dusk. More reliable than Yala.",
+    cost_entry:"$25 safari",cost_day:"$40–80",rating:"4.9",
+    styles:["adventurous","family","luxury"],
+    duration:"Full day",
+    trip_note:"Evening safari is best. Combine with Elephant Transit Home visit.",
+    why_prefix:"Elephant lovers from",
+    days_needed:1
+  },
+  {
+    id:19,name:"Polonnaruwa Ancient City",region:"North Central",
+    tags:["history","temples","culture","photography"],
+    interests:["history","temples","culture","photography"],
+    budget_min:20,budget_max:500,
+    img:"https://images.unsplash.com/photo-1609948543911-c5a2bf3f7bb0?w=600&q=75&auto=format&fit=crop",
+    desc:"UNESCO medieval capital with a 12th-century royal palace, moonstone carvings, and the Gal Vihara Buddha statues.",
+    cost_entry:"$25",cost_day:"$15–35",rating:"4.8",
+    styles:["cultural","budget","family"],
+    duration:"Half to full day",
+    trip_note:"Hire a bicycle at the gate — the whole site is best explored by bike.",
+    why_prefix:"History buffs will be awed by",
+    days_needed:1
+  },
+  {
+    id:20,name:"Pasikuda Beach",region:"Eastern Province",
+    tags:["beach","snorkelling","relaxed"],
+    interests:["beach","diving","yoga"],
+    budget_min:20,budget_max:400,
+    img:"https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?w=600&q=75&auto=format&fit=crop",
+    desc:"Shallow lagoon with crystal-clear water extending 300m from shore — one of Asia's safest swimming beaches.",
+    cost_entry:"Free",cost_day:"$15–80",rating:"4.6",
+    styles:["relaxed","luxury","family"],
+    duration:"2–3 days",
+    trip_note:"Best May–September. Beachside seafood shacks are open evenings.",
+    why_prefix:"Beach lovers seeking calm water",
+    days_needed:2
+  },
+  {
+    id:21,name:"Dambulla Cave Temple",region:"North Central",
+    tags:["temples","history","culture","photography"],
+    interests:["temples","history","culture"],
+    budget_min:15,budget_max:500,
+    img:"https://images.unsplash.com/photo-1588598198321-9735fd52430d?w=600&q=75&auto=format&fit=crop",
+    desc:"Five cave shrines with 153 Buddha statues and 2,100m² of painted murals — a living UNESCO sacred site.",
+    cost_entry:"$10",cost_day:"$5–15",rating:"4.8",
+    styles:["cultural","budget","family"],
+    duration:"2 hrs",
+    trip_note:"Remove shoes. Visit at opening (7am) to avoid heat and groups.",
+    why_prefix:"Devotees of sacred art and architecture",
+    days_needed:0.5
+  },
+  {
+    id:22,name:"Tangalle & Hiriketiya Bay",region:"Southern Province",
+    tags:["beach","surfing","yoga","food"],
+    interests:["beach","surfing","yoga","food"],
+    budget_min:20,budget_max:300,
+    img:"https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=600&q=75&auto=format&fit=crop",
+    desc:"Hiriketiya's horseshoe bay with a perfect beginner break and a thriving community of slow-travellers, surfers and yogis.",
+    cost_entry:"Free",cost_day:"$15–50",rating:"4.8",
+    styles:["relaxed","adventurous","budget"],
+    duration:"3–5 days",
+    trip_note:"Drift Inn and Hiri cafe are the community spots. Yoga classes on the beach.",
+    why_prefix:"Surf and wellness seekers from",
+    days_needed:2
+  },
+  {
+    id:23,name:"Sinharaja Rainforest Reserve",region:"Southern Province",
+    tags:["wildlife","hiking","photography","nature"],
+    interests:["wildlife","hiking","photography"],
+    budget_min:25,budget_max:500,
+    img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=75&auto=format&fit=crop",
+    desc:"Sri Lanka's last viable tract of primary rainforest — a UNESCO site with endemic purple-faced langurs and mixed bird waves.",
+    cost_entry:"$8 + guide $15",cost_day:"$20–45",rating:"4.9",
+    styles:["adventurous","cultural"],
+    duration:"Full day or overnight",
+    trip_note:"Mandatory guided entry. Best birdwatching in the first hour after dawn.",
+    why_prefix:"Naturalists and birders from",
+    days_needed:1
+  },
+  {
+    id:24,name:"Anuradhapura Sacred City",region:"North Central",
+    tags:["history","temples","culture"],
+    interests:["history","temples","culture"],
+    budget_min:15,budget_max:500,
+    img:"https://images.unsplash.com/photo-1609948543911-c5a2bf3f7bb0?w=600&q=75&auto=format&fit=crop",
+    desc:"The world's oldest continuously inhabited city. The sacred Bo tree was planted in 288 BC from the Buddha's original tree.",
+    cost_entry:"$25",cost_day:"$10–30",rating:"4.7",
+    styles:["cultural","budget","family"],
+    duration:"Full day",
+    trip_note:"Hire a bicycle to connect the 80+ stupas and temples across the site.",
+    why_prefix:"Those who seek the deepest historical roots",
+    days_needed:1
+  },
+  {
+    id:25,name:"Mirissa Beach & Night Market",region:"Southern Province",
+    tags:["beach","food","nightlife","whale"],
+    interests:["beach","food","nightlife","whale"],
+    budget_min:20,budget_max:300,
+    img:"https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=600&q=75&auto=format&fit=crop",
+    desc:"The southern coast's most vibrant beach town — whale watching at dawn, beach bars by noon, fresh grilled catch at night.",
+    cost_entry:"Free",cost_day:"$20–60",rating:"4.6",
+    styles:["relaxed","adventurous","budget"],
+    duration:"2–3 days",
+    trip_note:"Street food stalls open on the main road after 6pm. Cocktail Rock for sunset.",
+    why_prefix:"Social travellers who want beach life and food",
+    days_needed:1.5
+  },
+  {
+    id:26,name:"Kandy – Temple of the Tooth & Surrounds",region:"Central Province",
+    tags:["culture","temples","history","food"],
+    interests:["culture","temples","history","food"],
+    budget_min:20,budget_max:500,
+    img:"https://images.unsplash.com/photo-1609948543911-c5a2bf3f7bb0?w=600&q=75&auto=format&fit=crop",
+    desc:"Sacred custodian of the Buddha's tooth relic — drummers and dancers perform at the evening puja ceremony.",
+    cost_entry:"$5",cost_day:"$15–40",rating:"4.8",
+    styles:["cultural","family","luxury"],
+    duration:"1–2 days",
+    trip_note:"Attend the evening puja at 6:30pm. Walk the lake at sunrise before crowds.",
+    why_prefix:"Cultural pilgrims from all nations",
+    days_needed:1
+  },
+  {
+    id:27,name:"Lipton's Seat, Haputale",region:"Uva Province",
+    tags:["tea","photography","hiking","village"],
+    interests:["tea","photography","hiking","village"],
+    budget_min:20,budget_max:300,
+    img:"https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=600&q=75&auto=format&fit=crop",
+    desc:"Thomas Lipton's hilltop viewpoint above Dambatenne estate — a sea of tea carpeting ridges in every direction.",
+    cost_entry:"Free",cost_day:"$10–25",rating:"4.8",
+    styles:["adventurous","budget","relaxed"],
+    duration:"Half day",
+    trip_note:"Walk up via the tea estate trails (3hr). The tuk-tuk route is faster if pressed for time.",
+    why_prefix:"Photography lovers and hill country romantics",
+    days_needed:0.5
+  },
+  {
+    id:28,name:"Mannar Island & Adam's Bridge",region:"Northern Province",
+    tags:["history","culture","wildlife","nature"],
+    interests:["history","culture","wildlife","beach"],
+    budget_min:20,budget_max:300,
+    img:"https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?w=600&q=75&auto=format&fit=crop",
+    desc:"The forgotten north-west — flamingos in the salt flats, a ruined Portuguese fort, and the mythical chain of limestone shoals to India.",
+    cost_entry:"Free",cost_day:"$15–30",rating:"4.5",
+    styles:["adventurous","budget","cultural"],
+    duration:"Full day",
+    trip_note:"Sunrise over Adam's Bridge is extraordinary. Few facilities — bring food and water.",
+    why_prefix:"Explorers who want the road least travelled",
+    days_needed:1
+  },
+  {
+    id:29,name:"Unawatuna & Secret Jungle Beach",region:"Southern Province",
+    tags:["beach","diving","food","nightlife"],
+    interests:["beach","diving","food","nightlife"],
+    budget_min:20,budget_max:300,
+    img:"https://images.unsplash.com/photo-1502680390469-be75c86b636f?w=600&q=75&auto=format&fit=crop",
+    desc:"The curved lagoon of Unawatuna hides a secret cove only reachable on foot through the jungle — almost no one knows it.",
+    cost_entry:"Free",cost_day:"$15–50",rating:"4.6",
+    styles:["adventurous","relaxed","budget"],
+    duration:"1–2 days",
+    trip_note:"The secret cove path starts at the east end of the beach. Take a snorkel.",
+    why_prefix:"Beach explorers who love discovering",
+    days_needed:1
+  },
+  {
+    id:30,name:"Wilpattu National Park",region:"North Western",
+    tags:["wildlife","safari","photography","nature"],
+    interests:["wildlife","photography"],
+    budget_min:40,budget_max:500,
+    img:"https://images.unsplash.com/photo-1564760055775-d63b17a55c44?w=600&q=75&auto=format&fit=crop",
+    desc:"Sri Lanka's largest park — 60 leopards in forested lake country with virtually no tourist crowds compared to Yala.",
+    cost_entry:"$25 safari",cost_day:"$50–100",rating:"4.9",
+    styles:["adventurous","luxury","cultural"],
+    duration:"Full day",
+    trip_note:"Book 2 safaris in consecutive days for best leopard sightings. Villu lakes are the hotspots.",
+    why_prefix:"Leopard lovers and serious wildlife photographers",
+    days_needed:1
+  }
+];
+
+/* ─── COUNTRY INSIGHTS ─── */
+const COUNTRY_CONTEXT = {
+  JP:"Japanese travellers often appreciate well-organised cultural experiences, serene temples, and careful etiquette. We've prioritised sites with early-morning quietude and profound historical depth.",
+  DE:"German travellers typically value well-documented natural heritage and responsible eco-tourism. We've highlighted Sri Lanka's UNESCO sites and wildlife sanctuaries.",
+  FR:"French travellers often seek authentic cuisine, colonial heritage, and slower, immersive experiences. We've featured Galle Fort, local food gems, and unhurried village routes.",
+  US:"American travellers often appreciate adventure activities combined with comfort. We've balanced off-the-beaten-path gems with reliable logistics and mid-range accommodation.",
+  UK:"British travellers share a heritage connection through Sri Lanka's colonial past. We've woven in tea estate history, cricket grounds, and the Galle Fort's Dutch-British layers.",
+  AU:"Australian travellers love outdoor adventure and beach culture. We've prioritised surf breaks, wildlife safaris, and snorkelling sites alongside the cultural highlights.",
+  IN:"Travellers from India will find familiar spices and Buddhist heritage, but Sri Lanka's emptier beaches and wilder elephant encounters offer something genuinely different.",
+  CN:"We've selected sites with strong visual impact for photography, manageable logistics, and the island's most iconic spiritual landmarks.",
+  KR:"Korean travellers often appreciate scenic landscapes and nature photography. We've curated the most photogenic hill country, coastal, and cultural sites.",
+  LK:"As a local, you know the tourist trail. We've focused entirely on the places even most Sri Lankans haven't visited — the deep inland secrets.",
+  DEFAULT:"We've curated a cross-section of Sri Lanka's finest hidden gems based on your interests and budget, balancing adventure, culture, and natural wonder."
+};
+
+/* ─── AI ENGINE ─── */
+function getSelectedInterests(){
+  return Array.from(document.querySelectorAll('.int-chip.active')).map(c=>c.dataset.int);
+}
+function getSelectedDays(){
+  const chip=document.querySelector('.day-chip.active');
+  return chip?parseInt(chip.dataset.days):7;
+}
+function getBudget(){return parseInt(document.getElementById('budget-slider').value);}
+function getCountry(){return document.getElementById('inp-country').value;}
+function getStyle(){return document.getElementById('inp-style').value;}
+
+function scorePlace(p, interests, budget, style, days){
+  let score=0;
+  // Interest match
+  interests.forEach(i=>{ if(p.interests.includes(i)) score+=3; });
+  // Budget fit
+  if(budget>=p.budget_min) score+=2;
+  // Style match
+  if(p.styles.includes(style)) score+=2;
+  // Days feasibility
+  if(days>=2) score+=1;
+  return score;
+}
+
+function selectPlaces(interests, budget, style, days, country){
+  let scored = PLACES.map(p=>({...p, score: scorePlace(p,interests,budget,style,days)}));
+  // Filter out places that are too expensive
+  const budgetFilter = budget < 30 ? 30 : budget;
+  scored = scored.filter(p=>p.budget_min<=budgetFilter);
+  // Sort by score
+  scored.sort((a,b)=>b.score-a.score);
+  // Pick top places based on days (roughly 1.5 per day, min 4, max 12)
+  const count = Math.min(12, Math.max(4, Math.round(days*1.4)));
+  return scored.slice(0,count);
+}
+
+/* ─── BUILD WHY TEXT ─── */
+function buildWhy(p, interests, country, style){
+  const ctryMap={US:"the US",UK:"the UK",DE:"Germany",FR:"France",AU:"Australia",JP:"Japan",IN:"India",CN:"China",KR:"Korea",LK:"Sri Lanka",SE:"Sweden",NL:"the Netherlands",CA:"Canada",IT:"Italy",ES:"Spain",CH:"Switzerland",SG:"Singapore",AE:"the UAE",RU:"Russia",BR:"Brazil",ZA:"South Africa"};
+  const ctryName = ctryMap[country]||"your country";
+  const sharedInts = p.interests.filter(i=>interests.includes(i));
+  if(sharedInts.length>0){
+    const intName = sharedInts[0].replace("_"," ");
+    return `${p.why_prefix} — and you said you love ${intName} — this is one of Sri Lanka's best-kept secrets.`;
+  }
+  return `A strong match for ${ctryName} travellers based on your travel style and budget.`;
+}
+
+/* ─── BUILD ITINERARY ─── */
+function buildItinerary(places, days, budget, country){
+  const itinerary=[];
+  let dayNum=1, placeIdx=0;
+  const shuffled=[...places];
+  // Day 1: arrival + nearby place
+  itinerary.push({
+    day:1,
+    title:"Arrival & First Impressions",
+    places:[shuffled[0]||places[0]],
+    activities:[
+      {time:"Afternoon",act:"Arrive at Bandaranaike International Airport",note:"Check in to your accommodation. Rest and acclimatise.",cost:"Transfer ~$15"},
+      {time:"Evening",act:"Evening walk & local dinner",note:"Explore your neighbourhood. Try a rice & curry meal plate for ~$2.",cost:"~$3–5"},
+    ]
+  });
+  placeIdx=1;
+  // Remaining days
+  while(dayNum<days && placeIdx<shuffled.length){
+    const place=shuffled[placeIdx];
+    const nextPlace=shuffled[placeIdx+1];
+    const daysForPlace=place.days_needed;
+    if(daysForPlace>=1){
+      itinerary.push({
+        day:dayNum+1,
+        title:"Explore "+place.name,
+        places:[place],
+        activities:[
+          {time:"6:00 AM",act:"Early start to "+place.name,note:place.trip_note,cost:place.cost_entry},
+          {time:"12:00 PM",act:"Local lunch break",note:"Ask your guide or host for the nearest local eatery.",cost:"~$2–4"},
+          {time:"3:00 PM",act:"Continue exploration",note:"Spend the afternoon at "+place.name+" or nearby area.",cost:"Included"},
+          {time:"Evening",act:"Dinner & rest",note:"Return to base. Local seafood or rice curry recommended.",cost:"~$3–8"},
+        ]
+      });
+      dayNum+=Math.ceil(daysForPlace);
+    } else {
+      // Combine 2 half-day places
+      const combo=[place];
+      if(nextPlace&&nextPlace.days_needed<=0.5){combo.push(nextPlace);placeIdx++;}
+      itinerary.push({
+        day:dayNum+1,
+        title:combo.map(p=>p.name).join(" & "),
+        places:combo,
+        activities:[
+          {time:"6:00 AM",act:"Morning: "+place.name,note:place.trip_note,cost:place.cost_entry},
+          {time:"12:30 PM",act:"Lunch break & transfer",note:"Pack a local lunch or stop at a village kade (shop).",cost:"~$2–3"},
+          combo[1]?{time:"2:00 PM",act:"Afternoon: "+combo[1].name,note:combo[1].trip_note,cost:combo[1].cost_entry}:{time:"2:00 PM",act:"Leisure time",note:"Explore surroundings at your own pace.",cost:"Free"},
+          {time:"Evening",act:"Dinner & rest",note:"Try a local guesthouse meal.",cost:"~$3–8"},
+        ]
+      });
+      dayNum+=1;
+    }
+    placeIdx++;
+  }
+  // Last day: departure
+  if(itinerary.length<days){
+    itinerary.push({
+      day:days,
+      title:"Departure Day",
+      places:[],
+      activities:[
+        {time:"Morning",act:"Last morning at leisure",note:"Visit a local market or spice garden near your hotel.",cost:"~$0–5"},
+        {time:"Afternoon",act:"Transfer to airport",note:"Allow 2–3 hours from most regions. Colombo airport is BIA.",cost:"Transfer ~$15"},
+      ]
+    });
+  }
+  return itinerary.slice(0,days);
+}
+
+/* ─── BUDGET BREAKDOWN ─── */
+function buildBudget(budget, days, places){
+  const total=budget*days;
+  const accom=Math.round(total*0.35);
+  const food=Math.round(total*0.22);
+  const entry=Math.round(total*0.14);
+  const transport=Math.round(total*0.2);
+  const misc=total-accom-food-entry-transport;
+  return{total,accom,food,entry,transport,misc};
+}
+
+/* ─── TIPS BY COUNTRY ─── */
+function getTips(country,style,interests){
+  const tips=[
+    "Tuk-tuks are cheaper than taxis for short hops — always agree on price before getting in.",
+    "Sri Lanka uses 230V/50Hz electricity. Bring a universal adaptor.",
+    "The best value meals are at local 'hotels' (small eateries) — a full rice & curry is under $2.",
+    "Mobile data SIMs are cheap — Dialog or Hutch offer good coverage nationally.",
+    "Book trains online at visit.seatreservation.lk — especially for the Ella scenic route.",
+  ];
+  if(interests.includes('food')) tips.push("Ask guesthouse owners for their family recipes — many will offer to cook with you.");
+  if(interests.includes('wildlife')) tips.push("Safari jeep sharing cuts costs significantly — ask your lodge to pair you with other guests.");
+  if(interests.includes('temples')) tips.push("Carry a sarong — it doubles as a cover-up for temple entry and a beach mat.");
+  if(country==='JP') tips.push("Many sites have English guides but few have Japanese — download a translation app before visiting remote areas.");
+  if(country==='DE') tips.push("Sri Lanka has a growing eco-lodge network. Look for Responsible Tourism accredited properties.");
+  if(style==='budget') tips.push("Guesthouses run by families almost always offer better value and more authentic meals than hotel chains.");
+  if(style==='luxury') tips.push("Aman Galle Fort, Cape Weligama and Chena Huts Yala are Sri Lanka's most exceptional luxury stays.");
+  return tips.slice(0,5);
+}
+
+/* ─── RUN AI ─── */
+function runAI(){
+  const country=getCountry();
+  const interests=getSelectedInterests();
+  const budget=getBudget();
+  const days=getSelectedDays();
+  const style=getStyle();
+  if(!country){alert("Please select your country to personalise your recommendations.");return;}
+  if(interests.length===0){alert("Please select at least one interest so we can tailor your trip.");return;}
+  document.getElementById('form-section').style.display='none';
+  const loader=document.getElementById('ai-loader');
+  loader.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  // Animate loader steps
+  const steps=document.querySelectorAll('.lstep');
+  let si=0;
+  function nextStep(){
+    if(si>0) steps[si-1].className='lstep done';
+    if(si<steps.length){steps[si].className='lstep active';si++;setTimeout(nextStep,600+(Math.random()*400));}
+    else{setTimeout(()=>showResults(country,interests,budget,days,style),700);}
+  }
+  nextStep();
+}
+
+/* ─── SHOW RESULTS ─── */
+function showResults(country,interests,budget,days,style){
+  document.getElementById('ai-loader').classList.remove('active');
+  // Select places
+  const places=selectPlaces(interests,budget,style,days,country);
+  // Render result header
+  const ctryMap={US:"the US",UK:"the UK",DE:"Germany",FR:"France",AU:"Australia",JP:"Japan",IN:"India",CN:"China",KR:"Korea",LK:"Sri Lanka",SE:"Sweden",NL:"the Netherlands",CA:"Canada",IT:"Italy",ES:"Spain",CH:"Switzerland",SG:"Singapore",AE:"the UAE",RU:"Russia",BR:"Brazil",ZA:"South Africa"};
+  const ctryName=ctryMap[country]||"your country";
+  const intNames=interests.slice(0,3).join(", ");
+  document.getElementById('result-title').innerHTML=`${places.length} hidden gems picked <em>for you</em>`;
+  document.getElementById('result-meta').textContent=`${days} days · $${budget}/day budget · Based on: ${intNames} and more`;
+  // AI Insight
+  const insight = COUNTRY_CONTEXT[country]||COUNTRY_CONTEXT.DEFAULT;
+  document.getElementById('ai-insight-text').textContent=insight;
+  // Places grid
+  const grid=document.getElementById('places-grid');
+  grid.innerHTML='';
+  places.forEach((p,i)=>{
+    const why=buildWhy(p,interests,country,style);
+    const delay=`animation-delay:${i*0.08}s`;
+    grid.innerHTML+=`
+    <div class="place-card" style="${delay}">
+      <div class="pc-img-wrap">
+        <img class="pc-img" src="${p.img}" alt="${p.name}" loading="lazy">
+        <div class="pc-badges">
+          <div class="pc-badge match">AI Pick</div>
+          ${p.tags.slice(0,1).map(t=>`<div class="pc-badge">${t}</div>`).join('')}
+        </div>
+        <div class="pc-score">${p.rating}</div>
+      </div>
+      <div class="pc-body">
+        <div class="pc-tags">${p.tags.slice(0,3).map(t=>`<span class="pc-tag">${t}</span>`).join('')}</div>
+        <div class="pc-name">${p.name}</div>
+        <div class="pc-region">📍 ${p.region}</div>
+        <div class="pc-desc">${p.desc}</div>
+        <div class="pc-why">${why}</div>
+        <div class="pc-foot">
+          <span class="pc-cost">~${p.cost_day} / day</span>
+          <span class="pc-rating">★ ${p.rating}</span>
+          <span class="pc-dur">⏱ ${p.duration}</span>
+        </div>
+      </div>
+    </div>`;
+  });
+  // Build itinerary
+  const itinerary=buildItinerary(places,days,budget,country);
+  // Trip summary
+  const budgetData=buildBudget(budget,days,places);
+  document.getElementById('tp-title').innerHTML=`Your <em>${days}-day</em> Sri Lanka route`;
+  const sumEl=document.getElementById('tp-summary');
+  sumEl.innerHTML=`
+    <div class="tps-item"><span class="tps-val">${days}</span><span class="tps-lbl">Days</span></div>
+    <div class="tps-item"><span class="tps-val">${places.length}</span><span class="tps-lbl">Hidden Gems</span></div>
+    <div class="tps-item"><span class="tps-val">$${budget}</span><span class="tps-lbl">Daily Budget</span></div>
+    <div class="tps-item"><span class="tps-val">$${budgetData.total.toLocaleString()}</span><span class="tps-lbl">Total Est.</span></div>
+  `;
+  // Day cards
+  const dayCardsEl=document.getElementById('day-cards');
+  dayCardsEl.innerHTML='';
+  itinerary.forEach((day,idx)=>{
+    const placeNames=day.places.map(p=>p.name).join(" & ")||(idx===itinerary.length-1?"Departure":"Free Day");
+    const actCount=day.activities.length;
+    dayCardsEl.innerHTML+=`
+    <div class="day-card${idx<2?' open':''}">
+      <div class="dc-head" onclick="toggleDay(this.parentElement)">
+        <div class="dc-num">${String(day.day).padStart(2,'0')}</div>
+        <div class="dc-info">
+          <div class="dc-day">Day ${day.day} of ${days}</div>
+          <div class="dc-places">${day.title}</div>
+          <div class="dc-meta">${actCount} activities planned</div>
+        </div>
+        <div class="dc-toggle">▾</div>
+      </div>
+      <div class="dc-body">
+        <div class="dc-timeline">
+          ${day.activities.map((a,ai)=>`
+          <div class="dct-item">
+            <div class="dct-time-col">
+              <div class="dct-time">${a.time}</div>
+              ${ai<day.activities.length-1?'<div class="dct-line"></div>':''}
+            </div>
+            <div class="dct-content">
+              <div class="dct-act">${a.act}</div>
+              <div class="dct-note">${a.note}</div>
+              ${a.cost?`<div class="dct-cost">${a.cost}</div>`:''}
+            </div>
+          </div>`).join('')}
+        </div>
+        ${day.places.length>0?`<div style="margin-top:.8rem;padding:.6rem .8rem;background:rgba(154,114,56,.05);border-left:2px solid rgba(154,114,56,.2);font-size:.72rem;color:rgba(242,237,227,.45);line-height:1.6">
+          💡 ${day.places[0].trip_note}
+        </div>`:''}
+      </div>
+    </div>`;
+  });
+  // Budget breakdown
+  const bbEl=document.getElementById('budget-breakdown');
+  const bItems=[
+    {l:"Accommodation",v:budgetData.accom,pct:35},
+    {l:"Food & Drink",v:budgetData.food,pct:22},
+    {l:"Entry Fees & Tours",v:budgetData.entry,pct:14},
+    {l:"Transport",v:budgetData.transport,pct:20},
+    {l:"Shopping & Misc",v:budgetData.misc,pct:9},
+  ];
+  bbEl.innerHTML=`<div class="bb-title">Estimated Budget Breakdown</div>
+  <div class="bb-items">
+    ${bItems.map(b=>`<div class="bb-row">
+      <div class="bb-label">${b.l}</div>
+      <div class="bb-bar-wrap"><div class="bb-bar" style="width:0%" data-w="${b.pct}%"></div></div>
+      <div class="bb-amt">$${b.v.toLocaleString()}</div>
+    </div>`).join('')}
+  </div>
+  <div class="bb-total">
+    <div class="bb-total-lbl">Total Estimated Trip Cost</div>
+    <div class="bb-total-amt">$${budgetData.total.toLocaleString()}</div>
+  </div>`;
+  // Tips
+  const tips=getTips(country,style,interests);
+  document.getElementById('tips-box').innerHTML=`<div class="tips-title">Insider Tips for Your Trip</div>
+  <div class="tips-list">${tips.map(t=>`<div class="tip-item">${t}</div>`).join('')}</div>`;
+  // Show results
+  const rs=document.getElementById('results-section');
+  rs.style.display='block';
+  rs.classList.add('active');
+  // Animate bars after reveal
+  setTimeout(()=>{
+    document.querySelectorAll('.bb-bar').forEach(b=>{b.style.width=b.dataset.w;});
+  },600);
+  // Scroll to results
+  setTimeout(()=>rs.scrollIntoView({behavior:'smooth',block:'start'}),150);
+  // Reveal animations
+  const io=new IntersectionObserver(els=>els.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.08});
+  rs.querySelectorAll('.rv').forEach(el=>io.observe(el));
+}
+
+function toggleDay(card){card.classList.toggle('open');}
+
+function resetAll(){
+  document.getElementById('results-section').style.display='none';
+  document.getElementById('results-section').classList.remove('active');
+  document.getElementById('ai-loader').classList.remove('active');
+  document.getElementById('form-section').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ─── REVEAL ON SCROLL ─── */
+const io=new IntersectionObserver(els=>els.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in');}),{threshold:.1});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
