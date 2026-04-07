@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explore Hidden Gems — Sri Lanka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0d1510;
+  --ink2:#131d16;
+  --ink3:#192219;
+  --surface:#f2ede3;
+  --surface2:#e8e2d6;
+  --gold:#9a7238;
+  --c-gold:#c4923a;
+  --gold2:#b89050;
+  --gold3:#cead6a;
+  --green:#284438;
+  --green2:#3a5e50;
+  --white:#f8f5ef;
+  --muted:rgba(242,237,227,0.5);
+  --faint:rgba(242,237,227,0.15);
+  --glass:rgba(255,255,255,0.06);
+  --sidebar-w:280px;
+  --nav-h:62px;
+  --top-offset:112px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Jost',sans-serif;background:var(--ink);color:var(--surface);overflow-x:hidden;-webkit-font-smoothing:antialiased;cursor:none}
+
+/* ── CURSOR ── */
+#cdot{position:fixed;z-index:99999;width:7px;height:7px;background:var(--gold3);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);transition:opacity .3s;will-change:left,top}
+#cring{position:fixed;z-index:99998;width:32px;height:32px;border:1px solid rgba(184,144,80,.45);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s;will-change:left,top}
+#cring.big{width:54px;height:54px;border-color:var(--gold2)}
+@media(hover:none){#cdot,#cring{display:none}body{cursor:auto}}
+
+/* ══ ENTRY GATE ══ */
+#gate{
+  position:fixed;inset:0;z-index:10000;
+  background:var(--ink);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:1.5rem;
+  transition:opacity .8s cubic-bezier(.4,0,.2,1),visibility .8s;
+}
+#gate.leaving{opacity:0;visibility:hidden;pointer-events:none}
+.gate-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.gate-bg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 60%,rgba(40,68,56,.18),transparent 70%)}
+.gate-lines{position:absolute;inset:0;opacity:.06}
+.gate-logo{text-align:center;margin-bottom:clamp(1.5rem,4vw,3rem);opacity:0;animation:gateIn .9s .2s forwards}
+.gate-logo-main{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,4vw,2rem);font-weight:400;letter-spacing:.1em;color:var(--surface);display:block}
+.gate-logo-sub{font-size:.6rem;letter-spacing:.5em;text-transform:uppercase;color:var(--gold2);display:block;margin-top:.3rem}
+.gate-card{
+  width:100%;max-width:500px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:4px;
+  padding:clamp(1.4rem,4vw,2.8rem) clamp(1.1rem,4vw,2.5rem) clamp(1.2rem,3vw,2.5rem);
+  backdrop-filter:blur(20px);opacity:0;animation:gateIn .9s .45s forwards;position:relative;z-index:1;
+}
+.gate-card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(184,144,80,.3),transparent)}
+.gate-heading{font-family:'Playfair Display',serif;font-size:clamp(1.1rem,3vw,1.5rem);font-weight:400;color:var(--surface);margin-bottom:.4rem;text-align:center}
+.gate-sub{font-size:clamp(.68rem,2vw,.75rem);font-weight:300;color:rgba(242,237,227,.4);text-align:center;margin-bottom:clamp(1.2rem,3vw,2rem);letter-spacing:.04em}
+.gate-field{margin-bottom:1.1rem}
+.gate-label{font-size:.6rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gold2);display:block;margin-bottom:.5rem}
+.gate-select-wrap{position:relative}
+.gate-select{
+  width:100%;padding:.8rem 2.5rem .8rem 1rem;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:2px;
+  color:var(--surface);font-family:'Jost',sans-serif;font-size:clamp(.78rem,2vw,.84rem);font-weight:300;
+  appearance:none;-webkit-appearance:none;cursor:pointer;transition:border-color .3s,background .3s;outline:none;
+}
+.gate-select option{background:var(--ink2);color:var(--surface)}
+.gate-select:focus{border-color:var(--gold2);background:rgba(154,114,56,.06)}
+.gate-select:disabled{opacity:.3;cursor:not-allowed}
+.gate-select-arrow{position:absolute;right:1rem;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gold2);font-size:.7rem;transition:transform .3s}
+.gate-select-wrap:focus-within .gate-select-arrow{transform:translateY(-50%) rotate(180deg)}
+.gate-divider{display:flex;align-items:center;gap:.8rem;margin:.1rem 0 1.1rem}
+.gate-divider::before,.gate-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07)}
+.gate-divider span{font-size:.6rem;letter-spacing:.2em;color:rgba(242,237,227,.2);text-transform:uppercase}
+.gate-btn{
+  width:100%;padding:.88rem;background:var(--gold);color:var(--ink);
+  font-family:'Jost',sans-serif;font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;font-weight:500;
+  border:none;border-radius:2px;cursor:pointer;
+  transition:background .3s,transform .2s,opacity .3s;opacity:.4;pointer-events:none;
+}
+.gate-btn.ready{opacity:1;pointer-events:all}
+.gate-btn.ready:hover{background:var(--gold2);transform:translateY(-2px)}
+.gate-btn::after{content:'→';margin-left:.6rem}
+.gate-note{text-align:center;margin-top:1.1rem;font-size:.67rem;color:rgba(242,237,227,.2);letter-spacing:.04em;opacity:0;animation:gateIn .9s .7s forwards}
+@keyframes gateIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* landscape phone gate */
+@media(max-height:560px) and (orientation:landscape){
+  .gate-logo{margin-bottom:.8rem}
+  .gate-card{padding:1rem}
+  .gate-sub{margin-bottom:.8rem}
+  .gate-field{margin-bottom:.7rem}
+  .gate-divider{margin:.05rem 0 .7rem}
+}
+
+/* ══ APP LAYOUT ══ */
+#app{display:none;min-height:100vh;flex-direction:column}
+#app.show{display:flex}
+
+/* NAV */
+.ex-nav{
+  position:fixed;top:0;left:0;right:0;z-index:900;
+  padding:0 clamp(1rem,3vw,2rem);
+  height:var(--nav-h);
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(13,21,16,.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.07);gap:.8rem;
+}
+.ex-nav-logo{text-decoration:none;flex-shrink:0}
+.ex-nav-logo-m{font-family:'Playfair Display',serif;font-size:clamp(.95rem,2.5vw,1.15rem);color:var(--surface);letter-spacing:.06em;display:block;line-height:1.2}
+.ex-nav-logo-s{font-size:.5rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold2);display:block}
+.ex-nav-right{display:flex;align-items:center;gap:clamp(.4rem,1vw,.8rem);flex-shrink:0}
+.ex-nav-badge{padding:.26rem .75rem;border:1px solid rgba(154,114,56,.3);border-radius:100px;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold2);background:rgba(154,114,56,.07);white-space:nowrap}
+.ex-nav-badge span{font-weight:500;color:var(--gold3)}
+.view-toggle{display:flex;gap:.25rem}
+.vt-btn{width:32px;height:32px;border-radius:3px;border:1px solid rgba(255,255,255,.08);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:rgba(242,237,227,.3);transition:all .3s;flex-shrink:0}
+.vt-btn.on{background:rgba(154,114,56,.15);border-color:rgba(154,114,56,.3);color:var(--gold2)}
+.vt-btn svg{width:13px;height:13px;fill:currentColor}
+.ex-ham{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;background:none;border:none;flex-shrink:0}
+.ex-ham span{display:block;width:20px;height:1px;background:var(--surface);transition:.3s}
+.ex-ham.open span:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
+.ex-ham.open span:nth-child(2){opacity:0}
+.ex-ham.open span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
+
+/* SEARCH BAR — user modification: margin-top:0.75% preserved */
+.search-bar-wrap{
+  position:fixed;top:60px;left:0;right:0;z-index:800;
+  padding:.6rem 2rem;
+  background:rgba(13,21,16,.85);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(255,255,255,.05);
+  display:flex;align-items:center;gap:1rem;
+}
+.search-input-wrap{flex:1;position:relative;min-width:0}
+.search-input{
+  width:100%;padding:.54rem clamp(1.8rem,4vw,2.4rem) .54rem clamp(1.8rem,4vw,2.4rem);
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:2px;color:var(--surface);font-family:'Jost',sans-serif;font-size:.82rem;
+  outline:none;transition:border-color .3s;
+}
+.search-input:focus{border-color:var(--gold2)}
+.search-input::placeholder{color:rgba(242,237,227,.24)}
+.search-icon{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:rgba(242,237,227,.3);font-size:.78rem;pointer-events:none}
+.search-clear{position:absolute;right:.75rem;top:50%;transform:translateY(-50%);color:rgba(242,237,227,.3);font-size:.78rem;cursor:pointer;display:none;background:none;border:none;transition:color .3s}
+.search-clear:hover{color:var(--gold2)}
+.result-count{font-size:.63rem;letter-spacing:.08em;color:rgba(242,237,227,.28);white-space:nowrap;flex-shrink:0}
+
+/* BODY */
+.ex-body{display:flex;padding-top:var(--top-offset);min-height:100vh;position:relative}
+
+/* SIDEBAR */
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:var(--ink2);border-right:1px solid rgba(255,255,255,.06);
+  position:fixed;top:var(--top-offset);bottom:0;left:0;
+  overflow-y:auto;overflow-x:hidden;
+  transform:translateX(0);transition:transform .42s cubic-bezier(.4,0,.2,1);
+  z-index:700;padding:1.2rem 0 3rem;
+}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(154,114,56,.2);border-radius:2px}
+.sidebar.collapsed{transform:translateX(calc(-1 * var(--sidebar-w)))}
+.sb-header{padding:.3rem 1.3rem .9rem;display:flex;align-items:center;justify-content:space-between}
+.sb-title{font-size:.58rem;letter-spacing:.38em;text-transform:uppercase;color:var(--gold2)}
+.sb-reset{font-size:.6rem;color:rgba(242,237,227,.28);cursor:pointer;background:none;border:none;transition:color .3s;font-family:'Jost',sans-serif;padding:0}
+.sb-reset:hover{color:var(--gold2)}
+.sb-section{padding:.65rem 1.3rem}
+.sb-section-title{font-size:.58rem;letter-spacing:.26em;text-transform:uppercase;color:rgba(242,237,227,.4);margin-bottom:.78rem;display:flex;align-items:center;gap:.5rem}
+.sb-section-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.05)}
+.sb-check{display:flex;align-items:center;gap:.6rem;padding:.35rem 0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sb-check:hover .sb-cb-label{color:var(--surface)}
+.sb-cb{width:15px;height:15px;border-radius:2px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .25s}
+.sb-cb.checked{background:var(--gold);border-color:var(--gold)}
+.sb-cb.checked::after{content:'✓';font-size:.6rem;color:var(--ink);line-height:1}
+.sb-cb-label{font-size:.77rem;font-weight:300;color:rgba(242,237,227,.5);transition:color .2s;user-select:none;line-height:1.3}
+.sb-cb-count{margin-left:auto;font-size:.6rem;color:rgba(242,237,227,.18);background:rgba(255,255,255,.04);padding:.08rem .38rem;border-radius:100px;flex-shrink:0}
+.crowd-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.crowd-dot.hidden{background:#4a9e6e}
+.crowd-dot.moderate{background:#c4923a}
+.crowd-dot.popular{background:#9e4a4a}
+.fee-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* SIDEBAR TOGGLE TAB */
+.sb-toggle{
+  position:fixed;left:var(--sidebar-w);top:50%;transform:translateY(-50%);
+  width:22px;height:54px;background:var(--ink2);
+  border:1px solid rgba(255,255,255,.07);border-left:none;border-radius:0 4px 4px 0;
+  cursor:pointer;z-index:701;display:flex;align-items:center;justify-content:center;
+  transition:left .42s cubic-bezier(.4,0,.2,1),background .3s;
+  font-size:.7rem;color:rgba(242,237,227,.35);
+}
+.sb-toggle:hover{background:rgba(154,114,56,.1);color:var(--gold2)}
+.sb-toggle.collapsed{left:0}
+
+/* MAIN */
+.ex-main{flex:1;margin-left:var(--sidebar-w);padding:clamp(1rem,2.5vw,1.8rem) clamp(.9rem,2.5vw,1.8rem) 4rem;min-width:0;transition:margin-left .42s cubic-bezier(.4,0,.2,1)}
+.ex-main.full{margin-left:0}
+
+/* CHIPS */
+.active-filters{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.2rem;min-height:0}
+.af-chip{display:inline-flex;align-items:center;gap:.38rem;padding:.25rem .68rem;border-radius:100px;background:rgba(154,114,56,.1);border:1px solid rgba(154,114,56,.2);font-size:.62rem;letter-spacing:.06em;color:var(--gold3);cursor:pointer;transition:all .25s;white-space:nowrap}
+.af-chip:hover{background:rgba(154,114,56,.2)}
+.af-chip-x{font-size:.62rem;color:rgba(242,237,227,.3);margin-left:.08rem}
+
+/* GRID */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.2rem}
+.cards-grid.list-view{grid-template-columns:1fr}
+
+/* CARD */
+.gem-card{background:var(--ink3);border:1px solid rgba(255,255,255,.06);border-radius:3px;overflow:hidden;cursor:pointer;position:relative;transform-style:preserve-3d;transition:box-shadow .4s,border-color .4s,transform .4s;opacity:0;transform:translateY(24px);animation:cardIn .6s forwards}
+.gem-card:hover{box-shadow:0 24px 70px rgba(0,0,0,.55),0 0 0 1px rgba(154,114,56,.22),0 0 30px rgba(154,114,56,.07);border-color:rgba(154,114,56,.25)}
+@keyframes cardIn{to{opacity:1;transform:translateY(0)}}
+.gem-card:nth-child(1){animation-delay:.05s}.gem-card:nth-child(2){animation-delay:.1s}
+.gem-card:nth-child(3){animation-delay:.15s}.gem-card:nth-child(4){animation-delay:.2s}
+.gem-card:nth-child(5){animation-delay:.25s}.gem-card:nth-child(6){animation-delay:.3s}
+.gem-card:nth-child(7){animation-delay:.35s}.gem-card:nth-child(8){animation-delay:.4s}
+.gem-card:nth-child(9){animation-delay:.45s}.gem-card:nth-child(n+10){animation-delay:.5s}
+.gem-img-wrap{overflow:hidden;aspect-ratio:16/10;position:relative}
+.gem-img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s cubic-bezier(.4,0,.2,1),filter .7s;filter:brightness(.72) saturate(.9)}
+.gem-card:hover .gem-img{transform:scale(1.08);filter:brightness(.6) saturate(1.1)}
+.gem-badges{position:absolute;top:.65rem;left:.65rem;display:flex;gap:.35rem;flex-wrap:wrap}
+.gem-badge{padding:.15rem .58rem;border-radius:100px;background:rgba(13,21,16,.82);backdrop-filter:blur(10px);font-size:.53rem;letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(255,255,255,.08)}
+.badge-hidden{color:#4a9e6e;border-color:rgba(74,158,110,.2)}
+.badge-moderate{color:#c4923a;border-color:rgba(196,146,58,.2)}
+.badge-popular{color:#ce7e7e;border-color:rgba(206,126,126,.2)}
+.badge-free{color:var(--gold3);border-color:rgba(206,173,106,.2)}
+.badge-paid{color:rgba(242,237,227,.5);border-color:rgba(255,255,255,.1)}
+.gem-fav{position:absolute;top:.65rem;right:.65rem;width:28px;height:28px;border-radius:50%;background:rgba(13,21,16,.7);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:.85rem;cursor:pointer;transition:all .3s;opacity:0;pointer-events:none}
+.gem-card:hover .gem-fav{opacity:1;pointer-events:all}
+.gem-fav:hover{background:rgba(154,114,56,.2);border-color:rgba(154,114,56,.3)}
+.gem-fav.on{color:#e88;opacity:1;pointer-events:all}
+.gem-body{padding:1rem 1.1rem 1.15rem}
+.gem-body::before{content:'';display:block;width:100%;height:1px;margin-bottom:.8rem;background:linear-gradient(90deg,transparent,rgba(154,114,56,.18),transparent)}
+.gem-tag-row{display:flex;align-items:center;gap:.42rem;margin-bottom:.42rem;flex-wrap:wrap}
+.gem-tag{padding:.12rem .58rem;border-radius:100px;background:rgba(154,114,56,.08);border:1px solid rgba(154,114,56,.16);font-size:.53rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2)}
+.gem-region{font-size:.58rem;color:rgba(242,237,227,.24);margin-left:auto;white-space:nowrap}
+.gem-name{font-family:'Playfair Display',serif;font-size:clamp(1rem,2.5vw,1.18rem);font-weight:400;color:var(--surface);margin-bottom:.3rem;line-height:1.2}
+.gem-desc{font-size:.74rem;font-weight:300;color:rgba(242,237,227,.42);line-height:1.72;margin-bottom:.82rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.gem-foot{display:flex;align-items:center;justify-content:space-between;gap:.38rem;flex-wrap:wrap}
+.gem-rating{font-size:.7rem;color:var(--gold2);display:flex;align-items:center;gap:.22rem}
+.gem-stars{font-size:.67rem;letter-spacing:.04em}
+.gem-km{font-size:.6rem;color:rgba(242,237,227,.2)}
+.gem-arrow{width:25px;height:25px;border-radius:50%;border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:.68rem;color:rgba(242,237,227,.3);transition:all .3s;flex-shrink:0}
+.gem-card:hover .gem-arrow{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+
+/* LIST VIEW */
+.cards-grid.list-view .gem-card{display:flex;flex-direction:row}
+.cards-grid.list-view .gem-img-wrap{width:200px;flex-shrink:0;aspect-ratio:auto;height:auto;min-height:0}
+.cards-grid.list-view .gem-body{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+
+/* NO RESULTS */
+.no-results{text-align:center;padding:5rem 2rem;grid-column:1/-1;opacity:0;animation:cardIn .6s .1s forwards}
+.no-results-icon{font-size:2.5rem;margin-bottom:1rem;opacity:.3}
+.no-results-title{font-family:'Playfair Display',serif;font-size:1.4rem;color:rgba(242,237,227,.5);margin-bottom:.5rem}
+.no-results-sub{font-size:.8rem;color:rgba(242,237,227,.25);font-weight:300}
+
+/* MOBILE SIDEBAR OVERLAY */
+.sb-overlay{display:none;position:fixed;inset:0;z-index:699;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+.sb-overlay.show{display:block}
+
+/* FOOTER */
+.ex-footer{text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05);margin-top:2rem}
+.ex-footer p{font-size:.62rem;color:rgba(242,237,227,.18);letter-spacing:.06em}
+
+/* ══════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+══════════════════════════════════ */
+
+/* 1200px — tighter grid */
+@media(max-width:1200px){
+  .cards-grid{grid-template-columns:repeat(auto-fill,minmax(245px,1fr))}
+}
+
+/* 1024px — sidebar narrower */
+@media(max-width:1024px){
+  :root{--sidebar-w:255px}
+  .cards-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+  .cards-grid.list-view .gem-img-wrap{width:170px}
+}
+
+/* 900px — sidebar becomes slide-over overlay, ham visible */
+@media(max-width:900px){
+  .sidebar{
+    transform:translateX(calc(-1 * var(--sidebar-w)));
+    top:0 !important;
+    padding-top:calc(var(--top-offset) + 1rem);
+    height:100vh;
+    z-index:750;
+    box-shadow:none;
+  }
+  .sidebar.open{transform:translateX(0);box-shadow:4px 0 40px rgba(0,0,0,.5)}
+  .sb-toggle{display:none}
+  .ex-main{margin-left:0 !important}
+  .ex-ham{display:flex}
+  .cards-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+  .cards-grid.list-view .gem-img-wrap{width:160px}
+}
+
+/* 768px — 2 col grid, hide result count */
+@media(max-width:768px){
+  .result-count{display:none}
+  .cards-grid{grid-template-columns:repeat(2,1fr);gap:.9rem}
+  .cards-grid.list-view .gem-card{flex-direction:column}
+  .cards-grid.list-view .gem-img-wrap{width:100%;height:190px}
+  .gem-km{display:none}
+  .af-chip{font-size:.59rem}
+}
+
+/* 600px — single col cards */
+@media(max-width:600px){
+  :root{--sidebar-w:88vw}
+  .cards-grid{grid-template-columns:1fr;gap:.85rem}
+  .ex-nav-badge{display:none}
+  .gem-desc{-webkit-line-clamp:3}
+  .search-bar-wrap{margin-top:0}
+}
+
+/* 480px — phone optimised */
+@media(max-width:480px){
+  :root{--sidebar-w:100vw}
+  .ex-nav-logo-m{font-size:.95rem}
+  .vt-btn{width:30px;height:30px}
+  .gem-body{padding:.85rem .9rem 1rem}
+  .gem-name{font-size:1rem}
+  .gem-foot{flex-wrap:wrap}
+  .gem-arrow{margin-left:auto}
+  .ex-footer p{font-size:.56rem}
+}
+
+/* 380px — very small */
+@media(max-width:380px){
+  .ex-nav-right{gap:.3rem}
+  .cards-grid{gap:.75rem}
+  .active-filters{gap:.32rem}
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cdot"></div>
+<div id="cring"></div>
+
+<!-- ═══════════════════════════════════════
+     ENTRY GATE
+═══════════════════════════════════════ -->
+<div id="gate">
+  <div class="gate-bg">
+    <svg class="gate-lines" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="gr" width="60" height="60" patternUnits="userSpaceOnUse">
+          <path d="M60 0L0 0 0 60" fill="none" stroke="rgba(154,114,56,.15)" stroke-width=".5"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#gr)"/>
+    </svg>
+  </div>
+
+  <div class="gate-logo">
+    <span class="gate-logo-main">Hidden Gem</span>
+    <span class="gate-logo-sub">Sri Lanka · Explore</span>
+  </div>
+
+  <div class="gate-card">
+    <h2 class="gate-heading">Tell us about your journey</h2>
+    <p class="gate-sub">Select your region and travel interest to unlock personalised gems</p>
+
+    <div class="gate-field">
+      <label class="gate-label" for="sel1">Your Region</label>
+      <div class="gate-select-wrap">
+        <select class="gate-select" id="sel1" onchange="onRegionChange()">
+          <option value="">— Choose a region —</option>
+          <option value="north">Northern Province</option>
+          <option value="south">Southern Province</option>
+          <option value="central">Central Highlands</option>
+          <option value="west">Western Coast</option>
+          <option value="east">Eastern Beaches</option>
+        </select>
+        <span class="gate-select-arrow">▾</span>
+      </div>
+    </div>
+
+    <div class="gate-divider"><span>then</span></div>
+
+    <div class="gate-field">
+      <label class="gate-label" for="sel2">Travel Interest</label>
+      <div class="gate-select-wrap">
+        <select class="gate-select" id="sel2" disabled onchange="onInterestChange()">
+          <option value="">— Select region first —</option>
+        </select>
+        <span class="gate-select-arrow">▾</span>
+      </div>
+    </div>
+
+    <button class="gate-btn" id="gate-btn" onclick="enterExplore()">Explore Hidden Gems</button>
+  </div>
+  <p class="gate-note">340+ verified hidden spots · Updated April 2026</p>
+</div>
+
+<!-- ═══════════════════════════════════════
+     EXPLORE APP
+═══════════════════════════════════════ -->
+<div id="app">
+
+  <!-- NAV -->
+  <nav class="ex-nav">
+    <a href="index.html" class="ex-nav-logo">
+      <span class="ex-nav-logo-m">Hidden Gem</span>
+      <span class="ex-nav-logo-s">Sri Lanka</span>
+    </a>
+    <div class="ex-nav-right">
+      <div class="ex-nav-badge">Showing <span id="vis-count">0</span> gems</div>
+      <div class="view-toggle">
+        <button class="vt-btn on" id="vt-grid" title="Grid view" onclick="setView('grid')">
+          <svg viewBox="0 0 16 16"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        </button>
+        <button class="vt-btn" id="vt-list" title="List view" onclick="setView('list')">
+          <svg viewBox="0 0 16 16"><rect x="1" y="2" width="14" height="3" rx="1"/><rect x="1" y="7" width="14" height="3" rx="1"/><rect x="1" y="12" width="14" height="3" rx="1"/></svg>
+        </button>
+      </div>
+      <button class="ex-ham" id="ex-ham" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <!-- SEARCH BAR — your modification: margin-top:0.75% preserved -->
+  <div class="search-bar-wrap">
+    <div class="search-input-wrap">
+      <span class="search-icon">⌕</span>
+      <input class="search-input" id="search-input" type="text" placeholder="Search hidden gems…" oninput="onSearch()">
+      <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+    </div>
+    <span class="result-count" id="result-count">Loading…</span>
+  </div>
+
+  <div class="ex-body">
+    <div class="sb-overlay" id="sb-overlay" onclick="closeMobileSidebar()"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sb-header">
+        <span class="sb-title">Filters</span>
+        <button class="sb-reset" onclick="resetFilters()">Reset all</button>
+      </div>
+
+      <div class="sb-section">
+        <div class="sb-section-title">Crowd Level</div>
+        <label class="sb-check" onclick="toggleFilter('crowd','hidden')">
+          <div class="sb-cb" data-filter="crowd" data-val="hidden"></div>
+          <span class="crowd-dot hidden"></span>
+          <span class="sb-cb-label">Hidden — very few visitors</span>
+          <span class="sb-cb-count">12</span>
+        </label>
+        <label class="sb-check" onclick="toggleFilter('crowd','moderate')">
+          <div class="sb-cb" data-filter="crowd" data-val="moderate"></div>
+          <span class="crowd-dot moderate"></span>
+          <span class="sb-cb-label">Moderate — manageable</span>
+          <span class="sb-cb-count">9</span>
+        </label>
+        <label class="sb-check" onclick="toggleFilter('crowd','popular')">
+          <div class="sb-cb" data-filter="crowd" data-val="popular"></div>
+          <span class="crowd-dot popular"></span>
+          <span class="sb-cb-label">Popular — busy at peak times</span>
+          <span class="sb-cb-count">6</span>
+        </label>
+      </div>
+
+      <div class="sb-section">
+        <div class="sb-section-title">Entry Fee</div>
+        <label class="sb-check" onclick="toggleFilter('fee','free')">
+          <div class="sb-cb" data-filter="fee" data-val="free"></div>
+          <span class="fee-dot" style="background:#4a9e6e"></span>
+          <span class="sb-cb-label">Free entry</span>
+          <span class="sb-cb-count">14</span>
+        </label>
+        <label class="sb-check" onclick="toggleFilter('fee','low')">
+          <div class="sb-cb" data-filter="fee" data-val="low"></div>
+          <span class="fee-dot" style="background:var(--gold3)"></span>
+          <span class="sb-cb-label">Low cost (&lt; $5)</span>
+          <span class="sb-cb-count">7</span>
+        </label>
+        <label class="sb-check" onclick="toggleFilter('fee','paid')">
+          <div class="sb-cb" data-filter="fee" data-val="paid"></div>
+          <span class="fee-dot" style="background:rgba(206,126,126,.8)"></span>
+          <span class="sb-cb-label">Paid entry ($5+)</span>
+          <span class="sb-cb-count">6</span>
+        </label>
+      </div>
+
+      <div class="sb-section">
+        <div class="sb-section-title">Place Type</div>
+        <label class="sb-check" onclick="toggleFilter('type','beach')">
+          <div class="sb-cb" data-filter="type" data-val="beach"></div>
+          <span class="sb-cb-label">🏖️ Beach &amp; Coast</span>
+        </label>
+        <label class="sb-check" onclick="toggleFilter('type','mountain')">
+          <div class="sb-cb" data-filter="type" data-val="mountain"></div>
+          <span class="sb-cb-label">⛰️ Mountain &amp; Highlands</span>
+        </label>
+        <label class="sb-check" onclick="toggleFilter('type','temple')">
+          <div class="sb-cb" data-filter="type" data-val="temple"></div>
+          <span class="sb-cb-label">🛕 Temple &amp; Sacred Sites</span>
+        </label>
+        <label class="sb-check" onclick="toggleFilter('type','forest')">
+          <div class="sb-cb" data-filter="type" data-val="forest"></div>
+          <span class="sb-cb-label">🌿 Forest &amp; Jungle</span>
+        </label>
+        <label class="sb-check" onclick="toggleFilter('type','wildlife')">
+          <div class="sb-cb" data-filter="type" data-val="wildlife"></div>
+          <span class="sb-cb-label">🐘 Wildlife &amp; Nature</span>
+        </label>
+        <label class="sb-check" onclick="toggleFilter('type','waterfall')">
+          <div class="sb-cb" data-filter="type" data-val="waterfall"></div>
+          <span class="sb-cb-label">💧 Waterfall &amp; Lagoon</span>
+        </label>
+        <label class="sb-check" onclick="toggleFilter('type','heritage')">
+          <div class="sb-cb" data-filter="type" data-val="heritage"></div>
+          <span class="sb-cb-label">🏛️ Heritage &amp; Ruins</span>
+        </label>
+        <label class="sb-check" onclick="toggleFilter('type','village')">
+          <div class="sb-cb" data-filter="type" data-val="village"></div>
+          <span class="sb-cb-label">🏡 Village &amp; Culture</span>
+        </label>
+      </div>
+
+      <div class="sb-section">
+        <div class="sb-section-title">Minimum Rating</div>
+        <label class="sb-check" onclick="setRating(4.8)">
+          <div class="sb-cb" id="rb48"></div>
+          <span class="sb-cb-label">★ 4.8 and above</span>
+        </label>
+        <label class="sb-check" onclick="setRating(4.5)">
+          <div class="sb-cb" id="rb45"></div>
+          <span class="sb-cb-label">★ 4.5 and above</span>
+        </label>
+        <label class="sb-check" onclick="setRating(0)">
+          <div class="sb-cb" id="rb0"></div>
+          <span class="sb-cb-label">Show all ratings</span>
+        </label>
+      </div>
+    </aside>
+
+    <!-- SIDEBAR TOGGLE TAB -->
+    <div class="sb-toggle" id="sb-toggle" onclick="toggleDesktopSidebar()" title="Toggle filters">‹</div>
+
+    <!-- MAIN -->
+    <main class="ex-main" id="ex-main">
+      <div class="active-filters" id="active-filters"></div>
+      <div id="grid-view">
+        <div class="cards-grid" id="cards-grid"></div>
+      </div>
+      <footer class="ex-footer">
+        <p>Hidden Gem Sri Lanka · © 2026 · All gems verified by local experts</p>
+      </footer>
+    </main>
+  </div>
+</div>
+
+<script>
+/* ── DATA ── */
+const ALL_GEMS=[
+  {id:1,name:'Ritigala Forest Monastery',desc:'Ancient rock-cut ruins draped in mist, hidden within a strict nature reserve. Few tourists ever reach them.',type:'heritage',crowd:'hidden',fee:'free',rating:4.9,reviews:12,region:'Northern Province',km:'48 km from Habarana',img:'https://images.unsplash.com/photo-1588598198321-9735fd52430d?w=600&q=70&auto=format&fit=crop'},
+  {id:2,name:'Rekawa Lagoon',desc:'Untouched lagoon with nesting sea turtles and migratory birds. No tour buses — just silence and nature.',type:'waterfall',crowd:'hidden',fee:'free',rating:4.8,reviews:28,region:'Southern Province',km:'18 km from Tangalle',img:'https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=600&q=70&auto=format&fit=crop'},
+  {id:3,name:'Bambarakanda Falls',desc:"Sri Lanka's tallest waterfall reached via a misty tea-estate trail most visitors never walk.",type:'waterfall',crowd:'moderate',fee:'low',rating:5.0,reviews:8,region:'Central Highlands',km:'35 km from Haputale',img:'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&q=70&auto=format&fit=crop'},
+  {id:4,name:'Mulkirigala Rock Temple',desc:"Seven cave temples ascending a granite outcrop with 2,000-year-old murals. Sri Lanka's hidden Sigiriya.",type:'temple',crowd:'hidden',fee:'paid',rating:4.7,reviews:19,region:'Southern Province',km:'16 km from Hambantota',img:'https://images.unsplash.com/photo-1609948543911-c5a2bf3f7bb0?w=600&q=70&auto=format&fit=crop'},
+  {id:5,name:'Kumana Bird Sanctuary',desc:"Remote estuary at the island's eastern tip, home to rare painted storks and crocodiles.",type:'wildlife',crowd:'hidden',fee:'paid',rating:4.8,reviews:11,region:'Eastern Beaches',km:'22 km from Arugam Bay',img:'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&q=70&auto=format&fit=crop'},
+  {id:6,name:'Kalpitiya Fort & Lagoon',desc:'A crumbling Dutch fort jutting into a pristine lagoon, with spinner dolphins just offshore at dawn.',type:'heritage',crowd:'moderate',fee:'free',rating:4.6,reviews:34,region:'Western Coast',km:'35 km from Puttalam',img:'https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600&q=70&auto=format&fit=crop'},
+  {id:7,name:'Knuckles Cloud Forest',desc:'A UNESCO-listed cloud forest with hidden trekking trails through mist and ancient endemic flora.',type:'forest',crowd:'moderate',fee:'low',rating:5.0,reviews:22,region:'Central Highlands',km:'60 km from Kandy',img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=70&auto=format&fit=crop'},
+  {id:8,name:'Jaffna Fort',desc:'A massive Portuguese-Dutch fort perched at the tip of the Jaffna peninsula, largely overlooked by tourism.',type:'heritage',crowd:'moderate',fee:'free',rating:4.5,reviews:41,region:'Northern Province',km:'2 km from Jaffna Town',img:'https://images.unsplash.com/photo-1562602833-0f4ab2fc46e3?w=600&q=70&auto=format&fit=crop'},
+  {id:9,name:'Pigeon Island',desc:'Crystal-clear reef teeming with blacktip reef sharks, just a short boat ride from Trincomalee.',type:'beach',crowd:'moderate',fee:'paid',rating:4.9,reviews:55,region:'Eastern Beaches',km:'1 km from Nilaveli Beach',img:'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&q=70&auto=format&fit=crop'},
+  {id:10,name:'Horton Plains',desc:"A high plateau with sweeping grasslands, cloud forest, and the spectacular World's End cliff drop.",type:'mountain',crowd:'popular',fee:'paid',rating:4.8,reviews:77,region:'Central Highlands',km:'30 km from Nuwara Eliya',img:'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=600&q=70&auto=format&fit=crop'},
+  {id:11,name:'Mannar Baobab Tree',desc:'A 700-year-old African baobab believed to have been planted by Arab traders. Unique to all of Asia.',type:'heritage',crowd:'hidden',fee:'free',rating:4.6,reviews:9,region:'Northern Province',km:'20 km from Mannar Town',img:'https://images.unsplash.com/photo-1553342385-111fd6bc6ab3?w=600&q=70&auto=format&fit=crop'},
+  {id:12,name:'Mirissa Beach (Dawn)',desc:'Before the whale-watching boats leave, Mirissa at dawn is the quietest, most beautiful beach in the south.',type:'beach',crowd:'hidden',fee:'free',rating:4.9,reviews:18,region:'Southern Province',km:'3 km from Weligama',img:'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&q=70&auto=format&fit=crop'},
+  {id:13,name:'Arugam Bay Lagoon Trail',desc:'Past the famous surf break lies a quiet lagoon trail with crocodiles, fishing villages, and total silence.',type:'wildlife',crowd:'hidden',fee:'free',rating:4.7,reviews:14,region:'Eastern Beaches',km:'2 km from Arugam Bay',img:'https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=600&q=70&auto=format&fit=crop'},
+  {id:14,name:'Dondra Lighthouse Point',desc:'The southernmost tip of Sri Lanka — a working lighthouse with whale migration views in season.',type:'beach',crowd:'moderate',fee:'free',rating:4.5,reviews:23,region:'Southern Province',km:'6 km from Matara',img:'https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600&q=70&auto=format&fit=crop'},
+  {id:15,name:'Sinharaja Rain Forest',desc:'The last viable area of primary tropical rain forest in Sri Lanka — a biodiversity hotspot unlike anywhere.',type:'forest',crowd:'moderate',fee:'low',rating:5.0,reviews:33,region:'Southern Province',km:'40 km from Ratnapura',img:'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=600&q=70&auto=format&fit=crop'},
+  {id:16,name:'Nainativu Island Temple',desc:'A sacred Hindu island reached only by ferry through a lagoon, with no roads — just devotion and silence.',type:'temple',crowd:'hidden',fee:'free',rating:4.8,reviews:16,region:'Northern Province',km:'25 km from Jaffna by ferry',img:'https://images.unsplash.com/photo-1609948543911-c5a2bf3f7bb0?w=600&q=70&auto=format&fit=crop'},
+  {id:17,name:'Ella Rock Sunrise',desc:'A pre-dawn hike through tea estates to a cliff-top sunrise that most travellers simply sleep through.',type:'mountain',crowd:'popular',fee:'free',rating:4.9,reviews:88,region:'Central Highlands',km:'4 km from Ella Town',img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=70&auto=format&fit=crop'},
+  {id:18,name:'Wilpattu National Park',desc:"Sri Lanka's largest park, less visited than Yala, with leopards, sloth bears, and ancient villa lakes.",type:'wildlife',crowd:'moderate',fee:'paid',rating:4.7,reviews:29,region:'Western Coast',km:'30 km from Puttalam',img:'https://images.unsplash.com/photo-1588598198321-9735fd52430d?w=600&q=70&auto=format&fit=crop'},
+];
+
+const INTERESTS={
+  north:['Cultural Heritage','Sacred Temples','Ancient Ruins','Coastal Exploration','Village Life','Photography'],
+  south:['Whale Watching','Hidden Beaches','Local Cuisine','Colonial Heritage','Wildlife Safaris','Waterfalls'],
+  central:['Tea Estate Trails','Cloud Forest Trekking','Scenic Viewpoints','Buddhist Temples','Sunrise Hikes','Birdwatching'],
+  west:['Dolphin Spotting','Lagoon Kayaking','Dutch Forts','Seafood Experiences','Sunset Cruises','Kitesurfing'],
+  east:['Surf Culture','Coral Reefs','Lagoon Wildlife','Ancient Ruins','Diving','Fishing Villages'],
+};
+
+/* ── GATE ── */
+function onRegionChange(){
+  const r=document.getElementById('sel1').value;
+  const s2=document.getElementById('sel2');
+  s2.innerHTML='<option value="">— Choose your interest —</option>';
+  if(r&&INTERESTS[r]){
+    INTERESTS[r].forEach(i=>{const o=document.createElement('option');o.value=i.toLowerCase().replace(/\s+/g,'-');o.textContent=i;s2.appendChild(o);});
+    s2.disabled=false;
+  } else {
+    s2.disabled=true;
+    s2.innerHTML='<option value="">— Select region first —</option>';
+  }
+  checkGateReady();
+}
+function onInterestChange(){checkGateReady()}
+function checkGateReady(){
+  const r=document.getElementById('sel1').value;
+  const i=document.getElementById('sel2').value;
+  document.getElementById('gate-btn').classList.toggle('ready',!!(r&&i));
+}
+function enterExplore(){
+  document.getElementById('gate').classList.add('leaving');
+  setTimeout(()=>{
+    document.getElementById('app').classList.add('show');
+    initApp();
+  },800);
+}
+
+/* ── STATE ── */
+let filters={crowd:new Set(),fee:new Set(),type:new Set(),rating:0};
+let searchQ='',currentView='grid',sidebarOpen=true,favs=new Set();
+
+function initApp(){
+  recalcOffset();
+  renderCards();
+  document.getElementById('rb0').classList.add('checked');
+}
+
+/* Recalculate top offset dynamically so sidebar & body always align */
+function recalcOffset(){
+  const nav=document.querySelector('.ex-nav');
+  const sb=document.querySelector('.search-bar-wrap');
+  if(!nav||!sb)return;
+  // read actual rendered heights
+  const offset=nav.getBoundingClientRect().height+sb.getBoundingClientRect().height+parseFloat(getComputedStyle(sb).marginTop||0)+2;
+  document.documentElement.style.setProperty('--top-offset',Math.round(offset)+'px');
+  const sidebar=document.getElementById('sidebar');
+  if(sidebar&&window.innerWidth>900)sidebar.style.top=Math.round(offset)+'px';
+  const body=document.querySelector('.ex-body');
+  if(body)body.style.paddingTop=Math.round(offset)+'px';
+}
+window.addEventListener('resize',recalcOffset);
+
+/* ── FILTERING ── */
+function getFiltered(){
+  return ALL_GEMS.filter(g=>{
+    if(filters.crowd.size&&!filters.crowd.has(g.crowd))return false;
+    if(filters.fee.size&&!filters.fee.has(g.fee))return false;
+    if(filters.type.size&&!filters.type.has(g.type))return false;
+    if(g.rating<filters.rating)return false;
+    if(searchQ){const q=searchQ.toLowerCase();if(!g.name.toLowerCase().includes(q)&&!g.desc.toLowerCase().includes(q)&&!g.region.toLowerCase().includes(q)&&!g.type.toLowerCase().includes(q))return false;}
+    return true;
+  });
+}
+function toggleFilter(cat,val){
+  const cb=document.querySelector(`.sb-cb[data-filter="${cat}"][data-val="${val}"]`);
+  if(!cb||cat==='rating')return;
+  if(filters[cat].has(val)){filters[cat].delete(val);cb.classList.remove('checked');}else{filters[cat].add(val);cb.classList.add('checked');}
+  renderCards();updateChips();
+}
+function setRating(val){
+  filters.rating=val;
+  [{id:'rb48',v:4.8},{id:'rb45',v:4.5},{id:'rb0',v:0}].forEach(r=>{const el=document.getElementById(r.id);if(el)el.classList.toggle('checked',r.v===val);});
+  renderCards();updateChips();
+}
+function resetFilters(){
+  filters={crowd:new Set(),fee:new Set(),type:new Set(),rating:0};
+  document.querySelectorAll('.sb-cb').forEach(c=>c.classList.remove('checked'));
+  document.getElementById('rb0').classList.add('checked');
+  searchQ='';document.getElementById('search-input').value='';document.getElementById('search-clear').style.display='none';
+  renderCards();updateChips();
+}
+function onSearch(){searchQ=document.getElementById('search-input').value.trim();document.getElementById('search-clear').style.display=searchQ?'block':'none';renderCards();}
+function clearSearch(){searchQ='';document.getElementById('search-input').value='';document.getElementById('search-clear').style.display='none';renderCards();}
+
+/* ── RENDER ── */
+function renderCards(){
+  const f=getFiltered();
+  document.getElementById('vis-count').textContent=f.length;
+  document.getElementById('result-count').textContent=`${f.length} of ${ALL_GEMS.length} gems`;
+  const grid=document.getElementById('cards-grid');
+  if(!f.length){grid.innerHTML=`<div class="no-results"><div class="no-results-icon">🔍</div><div class="no-results-title">No hidden gems found</div><div class="no-results-sub">Try adjusting your filters or search query</div></div>`;return;}
+  const cL={hidden:'Hidden',moderate:'Moderate',popular:'Popular'};
+  const fL={free:'Free Entry',low:'Low Cost',paid:'Paid Entry'};
+  const cB={hidden:'badge-hidden',moderate:'badge-moderate',popular:'badge-popular'};
+  grid.innerHTML=f.map(g=>`
+    <div class="gem-card" data-id="${g.id}">
+      <div class="gem-img-wrap">
+        <img class="gem-img" src="${g.img}" alt="${g.name}" loading="lazy">
+        <div class="gem-badges">
+          <span class="gem-badge ${cB[g.crowd]}">${cL[g.crowd]}</span>
+          <span class="gem-badge ${g.fee==='free'?'badge-free':'badge-paid'}">${fL[g.fee]}</span>
+        </div>
+        <div class="gem-fav ${favs.has(g.id)?'on':''}" onclick="toggleFav(event,${g.id})">${favs.has(g.id)?'♥':'♡'}</div>
+      </div>
+      <div class="gem-body">
+        <div class="gem-tag-row">
+          <span class="gem-tag">${g.type.charAt(0).toUpperCase()+g.type.slice(1)}</span>
+          <span class="gem-region">${g.region}</span>
+        </div>
+        <div class="gem-name">${g.name}</div>
+        <div class="gem-desc">${g.desc}</div>
+        <div class="gem-foot">
+          <div class="gem-rating"><span class="gem-stars">★ ${g.rating}</span><span style="color:rgba(242,237,227,.24);">· ${g.reviews} reviews</span></div>
+          <span class="gem-km">${g.km}</span>
+          <div class="gem-arrow">→</div>
+        </div>
+      </div>
+    </div>`).join('');
+  // tilt — pointer devices only
+  if(matchMedia('(hover:hover)').matches){
+    grid.querySelectorAll('.gem-card').forEach(c=>{
+      c.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect();c.style.transform=`perspective(800px) rotateX(${((e.clientY-r.top-r.height/2)/r.height)*-6}deg) rotateY(${((e.clientX-r.left-r.width/2)/r.width)*6}deg) scale(1.025)`;});
+      c.addEventListener('mouseleave',()=>{c.style.transform='';});
+    });
+  }
+}
+function toggleFav(e,id){e.stopPropagation();if(favs.has(id))favs.delete(id);else favs.add(id);renderCards();}
+
+/* ── CHIPS ── */
+function updateChips(){
+  let h='';
+  filters.crowd.forEach(v=>h+=chip('crowd',v,{hidden:'🟢 Hidden',moderate:'🟡 Moderate',popular:'🔴 Popular'}[v]||v));
+  filters.fee.forEach(v=>h+=chip('fee',v,{free:'Free Entry',low:'Low Cost',paid:'Paid Entry'}[v]||v));
+  filters.type.forEach(v=>h+=chip('type',v,v.charAt(0).toUpperCase()+v.slice(1)));
+  if(filters.rating>0)h+=`<div class="af-chip" onclick="setRating(0)">★ ${filters.rating}+ <span class="af-chip-x">✕</span></div>`;
+  if(searchQ)h+=`<div class="af-chip" onclick="clearSearch()">Search: ${searchQ} <span class="af-chip-x">✕</span></div>`;
+  document.getElementById('active-filters').innerHTML=h;
+}
+function chip(c,v,l){return`<div class="af-chip" onclick="toggleFilter('${c}','${v}')">${l} <span class="af-chip-x">✕</span></div>`;}
+
+/* ── VIEW ── */
+function setView(v){
+  currentView=v;
+  document.querySelectorAll('.vt-btn').forEach(b=>b.classList.remove('on'));
+  const btn=document.getElementById('vt-'+v);if(btn)btn.classList.add('on');
+  document.getElementById('cards-grid').classList.toggle('list-view',v==='list');
+}
+
+/* ── SIDEBAR ── */
+function toggleSidebar(){
+  if(window.innerWidth<=900)toggleMobileSidebar();
+  else toggleDesktopSidebar();
+}
+function toggleMobileSidebar(){
+  const sb=document.getElementById('sidebar');
+  const ov=document.getElementById('sb-overlay');
+  const ham=document.getElementById('ex-ham');
+  const open=sb.classList.toggle('open');
+  ov.classList.toggle('show',open);
+  ham.classList.toggle('open',open);
+}
+function closeMobileSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sb-overlay').classList.remove('show');
+  document.getElementById('ex-ham').classList.remove('open');
+}
+function toggleDesktopSidebar(){
+  const sb=document.getElementById('sidebar');
+  const main=document.getElementById('ex-main');
+  const tog=document.getElementById('sb-toggle');
+  sidebarOpen=!sidebarOpen;
+  sb.classList.toggle('collapsed',!sidebarOpen);
+  main.classList.toggle('full',!sidebarOpen);
+  tog.classList.toggle('collapsed',!sidebarOpen);
+  tog.textContent=sidebarOpen?'‹':'›';
+}
+window.addEventListener('resize',()=>{
+  if(window.innerWidth>900)closeMobileSidebar();
+  recalcOffset();
+});
+
+/* ── CURSOR ── */
+const dot=document.getElementById('cdot'),ring=document.getElementById('cring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+document.querySelectorAll('a,button,.gem-card,.sb-check,.vt-btn,.gate-select,.af-chip').forEach(el=>{
+  el.addEventListener('mouseenter',()=>ring.classList.add('big'));
+  el.addEventListener('mouseleave',()=>ring.classList.remove('big'));
+});
+(function aC(){
+  dot.style.left=mx+'px';dot.style.top=my+'px';
+  rx+=(mx-rx)*.13;ry+=(my-ry)*.13;
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(aC);
+})();
+</script>
+</body>
+</html>
