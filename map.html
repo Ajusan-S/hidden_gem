@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explore Sri Lanka — Interactive Map · Hidden Gem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0d1510;--ink2:#131d16;--ink3:#192219;
+  --surface:#f2ede3;--gold:#9a7238;--c-gold:#c4923a;
+  --gold2:#b89050;--gold3:#cead6a;--green:#284438;--green2:#3a5e50;
+  --neon:#39ff7a;--neonD:rgba(57,255,122,.15);--neonF:rgba(57,255,122,.06);
+  --blue:#00e5ff;--blueD:rgba(0,229,255,.12);
+  --orange:#ff6b35;--orangeD:rgba(255,107,53,.12);
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Jost',sans-serif;background:var(--ink);color:var(--surface);-webkit-font-smoothing:antialiased;cursor:none}
+
+/* CURSOR */
+#cdot{position:fixed;z-index:99999;width:6px;height:6px;background:var(--gold3);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);will-change:left,top}
+#cring{position:fixed;z-index:99998;width:28px;height:28px;border:1px solid rgba(184,144,80,.4);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);transition:width .25s,height .25s,border-color .25s;will-change:left,top}
+#cring.big{width:48px;height:48px;border-color:var(--neon)}
+@media(hover:none){#cdot,#cring{display:none}body{cursor:auto}}
+
+/* NAV */
+#topnav{position:fixed;top:0;left:0;right:0;z-index:8000;padding:1rem 2%;display:flex;align-items:center;justify-content:space-between;background:rgba(13,21,16,.92);backdrop-filter:blur(22px);border-bottom:1px solid rgba(255,255,255,.055)}
+.nav-brand{text-decoration:none;display:flex;flex-direction:column;line-height:1.15}
+.nav-brand-m{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:400;letter-spacing:.05em;color:var(--surface)}
+.nav-brand-s{font-size:.48rem;letter-spacing:.42em;text-transform:uppercase;color:var(--gold2)}
+.nav-center{display:flex;align-items:center;gap:.8rem}
+.nav-tag{font-size:.55rem;letter-spacing:.28em;text-transform:uppercase;padding:.22rem .8rem;border:1px solid rgba(57,255,122,.25);color:var(--neon);border-radius:100px;background:rgba(57,255,122,.05)}
+.nav-count{font-size:.55rem;letter-spacing:.12em;color:rgba(242,237,227,.3)}
+.nav-back{display:flex;align-items:center;gap:.45rem;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(242,237,227,.4);text-decoration:none;padding:.4rem .9rem;border:1px solid rgba(255,255,255,.08);border-radius:1px;transition:all .3s}
+.nav-back:hover{color:var(--gold2);border-color:rgba(184,144,80,.3)}
+.nav-back::before{content:'←';margin-right:.1rem}
+
+/* MAP STAGE */
+#stage{position:fixed;inset:0;top:58px;overflow:hidden;background:radial-gradient(ellipse 80% 70% at 50% 40%,#0a1a12,#060e08)}
+/* animated ocean grid */
+#stage::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(57,255,122,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(57,255,122,.025) 1px,transparent 1px);background-size:60px 60px;animation:gridDrift 18s linear infinite;pointer-events:none}
+@keyframes gridDrift{0%{background-position:0 0}100%{background-position:60px 60px}}
+/* ocean glow */
+#stage::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 45% at 50% 50%,rgba(40,68,56,.18),transparent 70%);pointer-events:none}
+
+/* MAP SVG WRAPPER */
+#map-vp{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transition:transform .55s cubic-bezier(.4,0,.2,1)}
+#map-svg-wrap{position:relative;width:min(420px,52vw);transform-style:preserve-3d;filter:drop-shadow(0 30px 80px rgba(0,0,0,.7))}
+@media(max-width:900px){#map-svg-wrap{width:min(340px,80vw)}}
+@media(max-width:540px){#map-svg-wrap{width:min(280px,92vw)}}
+
+/* DISTRICT PATHS */
+.district{fill:#172818;stroke:#2a4535;stroke-width:.8;cursor:pointer;transition:fill .3s,filter .3s;transform-origin:center;transform-box:fill-box}
+.district:hover{fill:#223d2c;filter:drop-shadow(0 0 8px rgba(57,255,122,.25))}
+.district.active{fill:#1e3828;stroke:var(--neon);stroke-width:1.2;filter:drop-shadow(0 0 14px rgba(57,255,122,.35))}
+.district.dim{fill:#111f14;stroke:#1e2e20;opacity:.65}
+
+/* DISTRICT LABEL */
+.d-label{font-family:'Jost',sans-serif;font-size:6px;fill:rgba(242,237,227,.45);pointer-events:none;text-anchor:middle;letter-spacing:.06em;text-transform:uppercase;font-weight:300}
+.d-label.active-lbl{fill:var(--neon);font-weight:500}
+
+/* MARKERS */
+.marker-group{cursor:pointer}
+.marker-pulse{r:5;fill:none;stroke-width:1;animation:mpulse 2.5s ease-out infinite}
+.marker-dot{r:3.5;transition:r .3s}
+.marker-group:hover .marker-dot{r:5}
+/* Popular = gold */
+.m-popular .marker-pulse{stroke:var(--gold2)}
+.m-popular .marker-dot{fill:var(--gold2)}
+/* Hidden = neon */
+.m-hidden .marker-pulse{stroke:var(--neon)}
+.m-hidden .marker-dot{fill:var(--neon)}
+/* Sacred = blue */
+.m-sacred .marker-pulse{stroke:var(--blue)}
+.m-sacred .marker-dot{fill:var(--blue)}
+/* Wildlife = orange */
+.m-wildlife .marker-pulse{stroke:var(--orange)}
+.m-wildlife .marker-dot{fill:var(--orange)}
+@keyframes mpulse{0%{r:3;opacity:.8}100%{r:12;opacity:0}}
+
+/* INFO PANEL */
+#info-panel{position:fixed;right:0;top:58px;bottom:0;width:340px;background:rgba(13,21,16,.97);border-left:1px solid rgba(255,255,255,.07);transform:translateX(100%);transition:transform .45s cubic-bezier(.4,0,.2,1);z-index:7000;display:flex;flex-direction:column;overflow:hidden}
+#info-panel.open{transform:translateX(0)}
+.ip-close{position:absolute;top:.8rem;right:.8rem;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;cursor:pointer;color:rgba(242,237,227,.4);font-size:.75rem;transition:all .3s;z-index:2}
+.ip-close:hover{background:rgba(184,144,80,.12);color:var(--gold2);border-color:rgba(184,144,80,.25)}
+.ip-district-header{padding:1.4rem 1.4rem .8rem;border-bottom:1px solid rgba(255,255,255,.055);background:rgba(57,255,122,.025)}
+.ip-district-eyebrow{font-size:.52rem;letter-spacing:.32em;text-transform:uppercase;color:var(--neon);margin-bottom:.3rem}
+.ip-district-name{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:400;color:var(--surface);margin-bottom:.18rem;line-height:1.2}
+.ip-district-sub{font-size:.7rem;font-weight:300;color:rgba(242,237,227,.38)}
+.ip-places-list{flex:1;overflow-y:auto;padding:.9rem 1rem;display:flex;flex-direction:column;gap:.65rem}
+.ip-places-list::-webkit-scrollbar{width:3px}
+.ip-places-list::-webkit-scrollbar-track{background:rgba(255,255,255,.03)}
+.ip-places-list::-webkit-scrollbar-thumb{background:rgba(184,144,80,.25);border-radius:2px}
+
+/* PLACE CARD IN PANEL */
+.ip-place{border:1px solid rgba(255,255,255,.065);border-radius:3px;overflow:hidden;cursor:pointer;transition:border-color .3s,transform .3s,box-shadow .3s;transform-style:preserve-3d;background:rgba(255,255,255,.02)}
+.ip-place:hover{border-color:rgba(57,255,122,.28);transform:translateY(-3px) scale(1.01);box-shadow:0 12px 35px rgba(0,0,0,.45),0 0 0 1px rgba(57,255,122,.1)}
+.ip-place-img-w{position:relative;overflow:hidden;aspect-ratio:16/9}
+.ip-place-img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(.65) saturate(.8);transition:transform .55s,filter .55s}
+.ip-place:hover .ip-place-img{transform:scale(1.06);filter:brightness(.5) saturate(.95)}
+.ip-place-overlay{position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(13,21,16,.88) 100%);opacity:0;transition:opacity .4s}
+.ip-place:hover .ip-place-overlay{opacity:1}
+.ip-place-type-badge{position:absolute;top:.55rem;left:.55rem;padding:.15rem .6rem;border-radius:100px;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;backdrop-filter:blur(8px);border:1px solid}
+.badge-popular{background:rgba(154,114,56,.2);border-color:rgba(184,144,80,.35);color:var(--gold3)}
+.badge-hidden{background:rgba(57,255,122,.1);border-color:rgba(57,255,122,.3);color:var(--neon)}
+.badge-sacred{background:rgba(0,229,255,.1);border-color:rgba(0,229,255,.3);color:var(--blue)}
+.badge-wildlife{background:rgba(255,107,53,.1);border-color:rgba(255,107,53,.3);color:var(--orange)}
+.ip-place-rating{position:absolute;top:.55rem;right:.55rem;padding:.15rem .6rem;background:rgba(13,21,16,.8);backdrop-filter:blur(8px);border-radius:100px;font-size:.6rem;color:var(--gold2);border:1px solid rgba(184,144,80,.2)}
+/* hover detail overlay inside card */
+.ip-place-detail{position:absolute;bottom:0;left:0;right:0;padding:.65rem .75rem;transform:translateY(100%);transition:transform .4s cubic-bezier(.4,0,.2,1);background:rgba(13,21,16,.92)}
+.ip-place:hover .ip-place-detail{transform:translateY(0)}
+.ip-detail-name{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:400;color:var(--surface);margin-bottom:.18rem}
+.ip-detail-desc{font-size:.67rem;font-weight:300;color:rgba(242,237,227,.55);line-height:1.6}
+.ip-place-body{padding:.7rem .8rem .75rem}
+.ip-place-name{font-family:'Playfair Display',serif;font-size:1.02rem;font-weight:400;color:var(--surface);margin-bottom:.18rem}
+.ip-place-meta{display:flex;align-items:center;justify-content:space-between}
+.ip-place-cat{font-size:.6rem;font-weight:300;color:rgba(242,237,227,.38);letter-spacing:.08em}
+.ip-place-stars{font-size:.65rem;color:var(--gold2)}
+
+/* DISTRICT LIST SIDEBAR (left) */
+#district-list{position:fixed;left:0;top:58px;bottom:0;width:210px;background:rgba(13,21,16,.95);border-right:1px solid rgba(255,255,255,.06);overflow-y:auto;z-index:6000;padding:.6rem 0}
+#district-list::-webkit-scrollbar{width:2px}
+#district-list::-webkit-scrollbar-thumb{background:rgba(184,144,80,.2)}
+.dl-label{font-size:.5rem;letter-spacing:.32em;text-transform:uppercase;color:rgba(242,237,227,.22);padding:.5rem 1rem .3rem;margin-top:.3rem}
+.dl-item{display:flex;align-items:center;gap:.6rem;padding:.52rem 1rem;cursor:pointer;transition:background .25s;border-left:2px solid transparent}
+.dl-item:hover{background:rgba(57,255,122,.04);border-left-color:rgba(57,255,122,.3)}
+.dl-item.active{background:rgba(57,255,122,.06);border-left-color:var(--neon)}
+.dl-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dl-name{font-size:.72rem;font-weight:300;color:rgba(242,237,227,.55);transition:color .25s}
+.dl-item:hover .dl-name,.dl-item.active .dl-name{color:var(--surface)}
+.dl-count{margin-left:auto;font-size:.58rem;color:rgba(242,237,227,.2);flex-shrink:0}
+
+/* LEGEND */
+#legend{position:fixed;bottom:1.4rem;left:50%;transform:translateX(-50%);z-index:7000;display:flex;gap:.8rem;align-items:center;background:rgba(13,21,16,.88);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.06);border-radius:100px;padding:.5rem 1.2rem;flex-wrap:wrap;justify-content:center}
+.leg-item{display:flex;align-items:center;gap:.35rem;font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(242,237,227,.45);white-space:nowrap}
+.leg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* ZOOM CONTROLS */
+#zoom-ctrl{position:fixed;right:360px;bottom:1.4rem;z-index:7000;display:flex;gap:.4rem;transition:right .45s cubic-bezier(.4,0,.2,1)}
+#zoom-ctrl.shift{right:1.4rem}
+.zc-btn{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.1);background:rgba(13,21,16,.88);backdrop-filter:blur(12px);color:rgba(242,237,227,.55);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;font-family:'Jost',sans-serif}
+.zc-btn:hover{background:rgba(57,255,122,.08);border-color:rgba(57,255,122,.3);color:var(--neon)}
+
+/* HEATMAP TOGGLE */
+#hm-toggle{position:fixed;left:220px;bottom:1.4rem;z-index:7000;display:flex;align-items:center;gap:.5rem;padding:.42rem 1rem;border:1px solid rgba(255,255,255,.08);border-radius:100px;background:rgba(13,21,16,.88);backdrop-filter:blur(12px);cursor:pointer;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(242,237,227,.4);transition:all .3s}
+#hm-toggle:hover,#hm-toggle.on{border-color:rgba(57,255,122,.3);color:var(--neon)}
+#hm-toggle .hm-ico{width:12px;height:12px;border-radius:50%;background:radial-gradient(circle,rgba(57,255,122,.8),transparent);transition:opacity .3s}
+
+/* TOOLTIP on marker hover */
+#mtt{position:fixed;z-index:8500;pointer-events:none;background:rgba(13,21,16,.95);border:1px solid rgba(255,255,255,.1);border-radius:2px;padding:.35rem .75rem;font-size:.62rem;color:var(--surface);opacity:0;transition:opacity .2s;white-space:nowrap;backdrop-filter:blur(10px)}
+
+@media(max-width:900px){
+  #district-list{display:none}
+  #map-vp{left:0}
+  #zoom-ctrl{right:1.4rem}
+  #zoom-ctrl.shift{right:1.4rem}
+  #hm-toggle{left:1rem}
+  #info-panel{width:min(340px,100vw)}
+  #legend{left:1rem;right:1rem;transform:none;border-radius:8px}
+}
+@media(max-width:540px){
+  #info-panel{top:58px;left:0;right:0;width:100%;border-left:none;border-top:1px solid rgba(255,255,255,.07)}
+  #legend{display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="cdot"></div>
+<div id="cring"></div>
+<div id="mtt"></div>
+
+<!-- NAV -->
+<nav id="topnav">
+  <a href="index.html" class="nav-brand">
+    <span class="nav-brand-m">Hidden Gem</span>
+    <span class="nav-brand-s">Sri Lanka</span>
+  </a>
+  <div class="nav-center">
+    <span class="nav-tag">Interactive Map</span>
+    <span class="nav-count" id="nav-count">25 Districts · 75 Places</span>
+  </div>
+  <a href="index.html" class="nav-back">Home</a>
+</nav>
+
+<!-- DISTRICT LIST -->
+<div id="district-list"><div id="dl-inner"></div></div>
+
+<!-- MAP STAGE -->
+<div id="stage">
+  <div id="map-vp">
+    <div id="map-svg-wrap">
+      <svg id="map-svg" viewBox="0 0 400 580" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+        <defs>
+          <radialGradient id="islandGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="rgba(57,255,122,.06)"/>
+            <stop offset="100%" stop-color="transparent"/>
+          </radialGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="glow2"><feGaussianBlur stdDeviation="3.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <!-- Ocean glow behind island -->
+        <ellipse cx="200" cy="300" rx="175" ry="260" fill="url(#islandGlow)"/>
+        <!-- DISTRICTS will be injected by JS -->
+        <g id="districts-g"></g>
+        <g id="markers-g"></g>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- INFO PANEL -->
+<div id="info-panel">
+  <div class="ip-close" onclick="closePanel()">✕</div>
+  <div class="ip-district-header">
+    <div class="ip-district-eyebrow" id="ip-eyebrow">Province · District</div>
+    <div class="ip-district-name" id="ip-dname">Select a District</div>
+    <div class="ip-district-sub" id="ip-dsub">Click any district to explore</div>
+  </div>
+  <div class="ip-places-list" id="ip-places"></div>
+</div>
+
+<!-- ZOOM -->
+<div id="zoom-ctrl" class="shift">
+  <button class="zc-btn" onclick="zoomIn()">+</button>
+  <button class="zc-btn" onclick="zoomOut()">−</button>
+  <button class="zc-btn" onclick="zoomReset()" title="Reset">⌂</button>
+</div>
+
+<!-- HEATMAP TOGGLE -->
+<div id="hm-toggle" onclick="toggleHeatmap()">
+  <div class="hm-ico"></div>Heatmap
+</div>
+
+<!-- LEGEND -->
+<div id="legend">
+  <div class="leg-item"><div class="leg-dot" style="background:var(--gold2)"></div>Popular</div>
+  <div class="leg-item"><div class="leg-dot" style="background:var(--neon)"></div>Hidden Gem</div>
+  <div class="leg-item"><div class="leg-dot" style="background:var(--blue)"></div>Sacred</div>
+  <div class="leg-item"><div class="leg-dot" style="background:var(--orange)"></div>Wildlife</div>
+</div>
+
+<script>
+/* ─── CURSOR ─── */
+const dot=document.getElementById('cdot'),ring=document.getElementById('cring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function aC(){
+  dot.style.left=mx+'px';dot.style.top=my+'px';
+  rx+=(mx-rx)*.13;ry+=(my-ry)*.13;
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(aC);
+})();
+
+/* ─── DISTRICT DATA: all 25 Sri Lanka districts with SVG paths ─── */
+const DISTRICTS=[
+  {id:"colombo",name:"Colombo",province:"Western",path:"M 128 368 L 138 360 L 148 362 L 150 372 L 145 382 L 132 380 Z",cx:139,cy:371,color:"popular"},
+  {id:"gampaha",name:"Gampaha",province:"Western",path:"M 130 340 L 148 332 L 162 338 L 160 354 L 148 362 L 138 360 L 128 352 Z",cx:145,cy:347,color:"popular"},
+  {id:"kalutara",name:"Kalutara",province:"Western",path:"M 132 380 L 145 382 L 150 372 L 155 385 L 152 400 L 138 404 L 128 396 Z",cx:141,cy:390,color:"popular"},
+  {id:"kandy",name:"Kandy",province:"Central",path:"M 180 298 L 198 292 L 214 298 L 218 314 L 210 326 L 192 328 L 178 320 Z",cx:198,cy:310,color:"popular"},
+  {id:"matale",name:"Matale",province:"Central",path:"M 182 268 L 198 260 L 216 265 L 218 280 L 214 298 L 198 292 L 180 298 L 176 282 Z",cx:198,cy:279,color:"hidden"},
+  {id:"nuwaraeliya",name:"Nuwara Eliya",province:"Central",path:"M 192 328 L 210 326 L 225 332 L 228 346 L 218 356 L 204 358 L 190 350 Z",cx:209,cy:342,color:"hidden"},
+  {id:"galle",name:"Galle",province:"Southern",path:"M 152 440 L 168 434 L 182 438 L 184 452 L 174 462 L 158 460 L 148 452 Z",cx:166,cy:449,color:"popular"},
+  {id:"matara",name:"Matara",province:"Southern",path:"M 182 438 L 200 432 L 216 436 L 218 450 L 206 462 L 186 462 L 174 462 L 184 452 Z",cx:198,cy:448,color:"popular"},
+  {id:"hambantota",name:"Hambantota",province:"Southern",path:"M 218 450 L 238 442 L 256 448 L 262 464 L 248 474 L 226 474 L 210 468 Z",cx:236,cy:459,color:"wildlife"},
+  {id:"jaffna",name:"Jaffna",province:"Northern",path:"M 168 52 L 190 44 L 210 48 L 218 64 L 208 78 L 185 80 L 168 70 Z",cx:191,cy:62,color:"sacred"},
+  {id:"kilinochchi",name:"Kilinochchi",province:"Northern",path:"M 188 82 L 208 78 L 222 85 L 222 100 L 210 108 L 192 106 L 182 96 Z",cx:202,cy:93,color:"hidden"},
+  {id:"mannar",name:"Mannar",province:"Northern",path:"M 120 110 L 138 102 L 155 106 L 158 122 L 146 130 L 128 130 L 116 120 Z",cx:137,cy:116,color:"hidden"},
+  {id:"vavuniya",name:"Vavuniya",province:"Northern",path:"M 182 108 L 200 102 L 218 108 L 222 124 L 212 136 L 194 138 L 178 128 Z",cx:200,cy:120,color:"hidden"},
+  {id:"mullaitivu",name:"Mullaitivu",province:"Northern",path:"M 222 88 L 240 84 L 258 88 L 262 106 L 250 118 L 232 116 L 218 106 L 222 96 Z",cx:240,cy:101,color:"hidden"},
+  {id:"trincomalee",name:"Trincomalee",province:"Eastern",path:"M 255 155 L 275 148 L 292 155 L 296 172 L 284 184 L 264 182 L 250 172 Z",cx:273,cy:167,color:"popular"},
+  {id:"batticaloa",name:"Batticaloa",province:"Eastern",path:"M 270 232 L 290 224 L 308 228 L 312 248 L 298 262 L 276 262 L 260 250 Z",cx:286,cy:243,color:"popular"},
+  {id:"ampara",name:"Ampara",province:"Eastern",path:"M 262 296 L 280 288 L 298 292 L 302 310 L 288 322 L 268 320 L 254 308 Z",cx:278,cy:305,color:"wildlife"},
+  {id:"ratnapura",name:"Ratnapura",province:"Sabaragamuwa",path:"M 162 368 L 180 360 L 196 364 L 198 380 L 188 392 L 168 392 L 154 382 Z",cx:176,cy:377,color:"hidden"},
+  {id:"kegalle",name:"Kegalle",province:"Sabaragamuwa",path:"M 152 342 L 170 334 L 186 338 L 188 354 L 178 364 L 160 364 L 148 354 Z",cx:168,cy:350,color:"hidden"},
+  {id:"badulla",name:"Badulla",province:"Uva",path:"M 228 330 L 248 322 L 266 328 L 268 346 L 256 358 L 236 358 L 220 346 L 222 334 Z",cx:244,cy:341,color:"hidden"},
+  {id:"moneragala",name:"Monaragala",province:"Uva",path:"M 244 376 L 264 368 L 282 372 L 284 392 L 270 404 L 248 404 L 232 392 L 236 380 Z",cx:258,cy:387,color:"wildlife"},
+  {id:"kurunegala",name:"Kurunegala",province:"North Western",path:"M 148 270 L 168 262 L 184 268 L 184 285 L 172 296 L 150 294 L 138 282 Z",cx:162,cy:279,color:"hidden"},
+  {id:"puttalam",name:"Puttalam",province:"North Western",path:"M 108 216 L 128 208 L 146 212 L 148 230 L 136 242 L 115 242 L 103 230 Z",cx:126,cy:225,color:"hidden"},
+  {id:"anuradhapura",name:"Anuradhapura",province:"North Central",path:"M 162 170 L 182 162 L 202 166 L 206 185 L 194 198 L 170 198 L 154 186 Z",cx:180,cy:180,color:"sacred"},
+  {id:"polonnaruwa",name:"Polonnaruwa",province:"North Central",path:"M 218 192 L 238 184 L 256 188 L 260 208 L 246 222 L 224 222 L 208 208 L 212 196 Z",cx:234,cy:203,color:"sacred"},
+];
+
+/* ─── PLACES DATA: 3 per district (75 total) ─── */
+const PLACES={
+  colombo:[
+    {name:"Gangarama Temple",type:"sacred",cat:"Buddhist Temple",rating:4.7,badge:"Night Temple",img:"https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=500&q=75&auto=format&fit=crop",desc:"Eclectic multi-faith temple illuminated at night — a melting pot of three religions."},
+    {name:"Pettah Bazaar",type:"popular",cat:"Street Market",rating:4.6,badge:"Sensory Overload",img:"https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500&q=75&auto=format&fit=crop",desc:"Colombo's oldest bazaar with spice lanes, fish markets and hypnotic street sounds."},
+    {name:"Dutch Colonial Walk",type:"hidden",cat:"Heritage Walk",rating:4.5,badge:"Underrated",img:"https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=500&q=75&auto=format&fit=crop",desc:"Dutch, Portuguese and British architecture layers in a 2km walk through Fort."},
+  ],
+  gampaha:[
+    {name:"Attanagalla Devale",type:"sacred",cat:"Ancient Shrine",rating:4.6,badge:"Sacred Site",img:"https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=500&q=75&auto=format&fit=crop",desc:"One of Sri Lanka's oldest shrines revered by Buddhists, Hindus and Catholics alike."},
+    {name:"Muthurajawela Wetlands",type:"wildlife",cat:"Wetland Safari",rating:4.7,badge:"Bird Haven",img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&q=75&auto=format&fit=crop",desc:"Boat safari through mangrove waterways with 189 bird species and monitor lizards."},
+    {name:"Henarathgoda Botanical Gardens",type:"hidden",cat:"Colonial Gardens",rating:4.5,badge:"Hidden Gardens",img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&q=75&auto=format&fit=crop",desc:"Where the world's first rubber tree was planted. Peaceful, barely visited."},
+  ],
+  kalutara:[
+    {name:"Kalutara Bodhiya",type:"sacred",cat:"Sacred Dagoba",rating:4.7,badge:"Hollow Dagoba",img:"https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=500&q=75&auto=format&fit=crop",desc:"The only hollow dagoba in the world — visitors walk through its sacred interior."},
+    {name:"Kalu Ganga River Safari",type:"wildlife",cat:"River Safari",rating:4.6,badge:"Mangroves",img:"https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=500&q=75&auto=format&fit=crop",desc:"Motorboat through mangrove tunnels with crocodiles and kingfishers."},
+    {name:"Wadduwa Beach",type:"popular",cat:"Quiet Beach",rating:4.4,badge:"Peaceful",img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&q=75&auto=format&fit=crop",desc:"Less crowded than Bentota. Calm waters, no touts, golden hour perfection."},
+  ],
+  kandy:[
+    {name:"Temple of the Tooth",type:"sacred",cat:"Sacred Relic",rating:4.9,badge:"Holiest Temple",img:"https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=500&q=75&auto=format&fit=crop",desc:"Sri Lanka's most sacred Buddhist relic. Evening puja ceremony is deeply moving."},
+    {name:"Peradeniya Botanical Gardens",type:"popular",cat:"Colonial Gardens",rating:4.7,badge:"147 Acres",img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&q=75&auto=format&fit=crop",desc:"Giant Bamboo grove, orchid house and double coconut palms in 147 acres."},
+    {name:"Udawattakele Forest",type:"hidden",cat:"Forest Reserve",rating:4.6,badge:"Royal Forest",img:"https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=500&q=75&auto=format&fit=crop",desc:"Ancient royal forest above Kandy lake with purple-faced langurs and giant squirrels."},
+  ],
+  matale:[
+    {name:"Nalanda Gedige",type:"sacred",cat:"Rock Shrine",rating:4.7,badge:"Mysterious",img:"https://images.unsplash.com/photo-1609948543911-c5a2bf3f7bb0?w=500&q=75&auto=format&fit=crop",desc:"Hindu-Buddhist fusion temple from the 8th century — almost entirely unknown to tourists."},
+    {name:"Spice Garden Matale",type:"popular",cat:"Spice Experience",rating:4.5,badge:"Aromatic",img:"https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500&q=75&auto=format&fit=crop",desc:"Walk through cinnamon, nutmeg, cardamom and pepper in their natural habitat."},
+    {name:"Knuckles Cloud Forest",type:"hidden",cat:"Trekking",rating:5.0,badge:"UNESCO",img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&q=75&auto=format&fit=crop",desc:"Misty ridge trails through UNESCO cloud forest with endemic wildlife. Sri Lanka's finest trek."},
+  ],
+  nuwaraeliya:[
+    {name:"Horton Plains & World's End",type:"popular",cat:"Highland Nature",rating:5.0,badge:"World's End",img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&q=75&auto=format&fit=crop",desc:"Cloud forest plateau dropping 870m at World's End — Sri Lanka's most dramatic viewpoint."},
+    {name:"Pedro Tea Estate",type:"popular",cat:"Tea Factory",rating:4.6,badge:"Tea Culture",img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&q=75&auto=format&fit=crop",desc:"Working tea factory open to visitors — watch leaves become Ceylon tea step by step."},
+    {name:"Gregory Lake Dawn Walk",type:"hidden",cat:"Scenic Walk",rating:4.7,badge:"Misty Dawn",img:"https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=500&q=75&auto=format&fit=crop",desc:"Rose-tinted mist over a lake surrounded by Victorian bungalows at 5am."},
+  ],
+  galle:[
+    {name:"Galle Dutch Fort",type:"popular",cat:"Colonial Heritage",rating:4.9,badge:"UNESCO",img:"https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=500&q=75&auto=format&fit=crop",desc:"Intact Dutch colonial fort with boutique cafés, galleries and sunset rampart walks."},
+    {name:"Jungle Beach",type:"hidden",cat:"Secret Beach",rating:4.7,badge:"Hidden Cove",img:"https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500&q=75&auto=format&fit=crop",desc:"Accessible only by forest path — a private-feeling cove near Unawatuna."},
+    {name:"Koggala Lake Safari",type:"wildlife",cat:"Boat Safari",rating:4.6,badge:"Lake Life",img:"https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=500&q=75&auto=format&fit=crop",desc:"Cinnamon island, heron colonies and water monitors in a tranquil lake."},
+  ],
+  matara:[
+    {name:"Star Fort Matara",type:"popular",cat:"Colonial Fort",rating:4.6,badge:"Star-Shaped",img:"https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=500&q=75&auto=format&fit=crop",desc:"Rare star-shaped Dutch fort in the middle of a river — unique in Sri Lanka."},
+    {name:"Dondra Head Lighthouse",type:"hidden",cat:"Landmark",rating:4.5,badge:"Southernmost",img:"https://images.unsplash.com/photo-1588598198321-9735fd52430d?w=500&q=75&auto=format&fit=crop",desc:"The southernmost point of Sri Lanka — open ocean to Antarctica from here."},
+    {name:"Polhena Beach",type:"popular",cat:"Reef Beach",rating:4.6,badge:"Sea Turtles",img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&q=75&auto=format&fit=crop",desc:"Shallow natural reef where sea turtles feed in the shallows every morning."},
+  ],
+  hambantota:[
+    {name:"Yala National Park",type:"wildlife",cat:"Wildlife Safari",rating:5.0,badge:"Leopard Country",img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&q=75&auto=format&fit=crop",desc:"World's highest density of leopards. Elephants and crocodiles at sunrise."},
+    {name:"Bundala Flamingo Lagoon",type:"wildlife",cat:"Bird Sanctuary",rating:4.7,badge:"UNESCO",img:"https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=500&q=75&auto=format&fit=crop",desc:"UNESCO biosphere — flamingos, pelicans and crocodiles in saltwater lagoons."},
+    {name:"Mulkirigala Rock Temple",type:"hidden",cat:"Rock Temple",rating:4.7,badge:"Local Secret",img:"https://images.unsplash.com/photo-1609948543911-c5a2bf3f7bb0?w=500&q=75&auto=format&fit=crop",desc:"Seven cave temples with 2,000-year-old murals. Sri Lanka's hidden Sigiriya."},
+  ],
+  jaffna:[
+    {name:"Nallur Kandaswamy Temple",type:"sacred",cat:"Hindu Temple",rating:4.9,badge:"Grand Temple",img:"https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=500&q=75&auto=format&fit=crop",desc:"One of South Asia's most significant Hindu temples with golden gopuram."},
+    {name:"Jaffna Fort",type:"popular",cat:"Colonial Fort",rating:4.5,badge:"Fort & Lagoon",img:"https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=500&q=75&auto=format&fit=crop",desc:"Portuguese/Dutch fort on a lagoon spit with stunning views at sunset."},
+    {name:"Jaffna Crab Curry Homes",type:"hidden",cat:"Local Food",rating:5.0,badge:"Legendary",img:"https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500&q=75&auto=format&fit=crop",desc:"Black crab curry on banana leaves in family-run homes. Asia's best $3 meal."},
+  ],
+  kilinochchi:[
+    {name:"Kilinochchi Water Tower",type:"hidden",cat:"War Memorial",rating:4.3,badge:"War History",img:"https://images.unsplash.com/photo-1588598198321-9735fd52430d?w=500&q=75&auto=format&fit=crop",desc:"Bombed water tower left standing as a memorial to the civil war era."},
+    {name:"Iranamadu Tank",type:"wildlife",cat:"Reservoir",rating:4.4,badge:"Bird Life",img:"https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=500&q=75&auto=format&fit=crop",desc:"Ancient reservoir drawing pelicans, painted storks and spot-billed pelicans."},
+    {name:"Northern Plains Villu",type:"hidden",cat:"Hidden Wetland",rating:4.5,badge:"Off Map",img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&q=75&auto=format&fit=crop",desc:"Seasonally flooded grasslands with elephant herds — barely on any tourist map."},
+  ],
+  mannar:[
+    {name:"Adam's Bridge Causeway",type:"sacred",cat:"Sacred Site",rating:4.8,badge:"Mythological",img:"https://images.unsplash.com/photo-1588598198321-9735fd52430d?w=500&q=75&auto=format&fit=crop",desc:"The ancient land bridge mentioned in the Ramayana — sacred and utterly remote."},
+    {name:"Mannar Fort",type:"hidden",cat:"Colonial Ruin",rating:4.4,badge:"Forgotten Fort",img:"https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=500&q=75&auto=format&fit=crop",desc:"Crumbling Portuguese fortress at the sea's edge — completely tourist-free."},
+    {name:"Mannar Flamingo Colony",type:"wildlife",cat:"Bird Watching",rating:4.7,badge:"Rare Pink",img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&q=75&auto=format&fit=crop",desc:"Thousands of flamingos turn the salt flats pink between October and March."},
+  ],
+  vavuniya:[
+    {name:"Madukanda Vihara",type:"sacred",cat:"Ancient Temple",rating:4.5,badge:"Pilgrimage",img:"https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=500&q=75&auto=format&fit=crop",desc:"Ancient Buddhist temple at a key crossroads of north–south pilgrim routes."},
+    {name:"Cheddikulam Tank",type:"wildlife",cat:"Wildlife Reservoir",rating:4.4,badge:"Elephant Crossing",img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&q=75&auto=format&fit=crop",desc:"Wild elephants cross this reservoir at dusk — utterly undiscovered by tourists."},
+    {name:"Vavuniya Market",type:"hidden",cat:"Local Market",rating:4.3,badge:"North Life",img:"https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=500&q=75&auto=format&fit=crop",desc:"Real northern Sri Lanka life — dried fish, palmyra products and Tamil spices."},
+  ],
+  mullaitivu:[
+    {name:"Mullaitivu Beach",type:"hidden",cat:"Remote Beach",rating:4.6,badge:"Pristine",img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&q=75&auto=format&fit=crop",desc:"One of Sri Lanka's longest and emptiest beaches — zero tourist infrastructure."},
+    {name:"Nanthikadal Lagoon",type:"wildlife",cat:"Lagoon",rating:4.5,badge:"Flamingos",img:"https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=500&q=75&auto=format&fit=crop",desc:"Remote flamingo and pelican lagoon at the island's northern tip."},
+    {name:"Oddusuddan Tank",type:"hidden",cat:"Ancient Reservoir",rating:4.3,badge:"Ancient Waters",img:"https://images.unsplash.com/photo-1588598198321-9735fd52430d?w=500&q=75&auto=format&fit=crop",desc:"A 2,000-year-old reservoir still sustaining a farming community — unchanged for millennia."},
+  ],
+  trincomalee:[
+    {name:"Koneswaram Clifftop Temple",type:"sacred",cat:"Hindu Temple",rating:4.8,badge:"Clifftop Shrine",img:"https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=500&q=75&auto=format&fit=crop",desc:"Hindu temple on a cliff above turquoise ocean. Spectacular evening puja."},
+    {name:"Nilaveli Beach",type:"popular",cat:"Pristine Beach",rating:4.9,badge:"Pristine",img:"https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500&q=75&auto=format&fit=crop",desc:"Six-kilometre empty white sand beach. Snorkel reef sharks at Pigeon Island."},
+    {name:"Uppuveli WWII Dive Sites",type:"hidden",cat:"Wreck Diving",rating:4.9,badge:"WWII Wrecks",img:"https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500&q=75&auto=format&fit=crop",desc:"WWII warships at 18m with turtles, reef sharks and Napoleon wrasse."},
+  ],
+  batticaloa:[
+    {name:"Batticaloa Lagoon Singing Fish",type:"hidden",cat:"Natural Wonder",rating:4.7,badge:"Unexplained",img:"https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=500&q=75&auto=format&fit=crop",desc:"Fish in this lagoon produce a singing sound on full-moon nights — scientifically unexplained."},
+    {name:"Kallady Beach",type:"popular",cat:"Beach",rating:4.5,badge:"Quiet East",img:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&q=75&auto=format&fit=crop",desc:"Clean eastern beach with warm water and virtually no foreign tourists."},
+    {name:"Batticaloa Fort",type:"hidden",cat:"Colonial Ruin",rating:4.4,badge:"Dutch Ruin",img:"https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=500&q=75&auto=format&fit=crop",desc:"Dutch fort on a lagoon island with crumbling walls and a living church inside."},
+  ],
+  ampara:[
+    {name:"Kumana Bird Sanctuary",type:"wildlife",cat:"Bird Reserve",rating:4.8,badge:"Rare Birds",img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&q=75&auto=format&fit=crop",desc:"Remote estuary with painted storks, crocodiles and sambar deer. Barely mapped."},
+    {name:"Arugam Bay",type:"popular",cat:"Surf & Beach",rating:4.8,badge:"Surf Point",img:"https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500&q=75&auto=format&fit=crop",desc:"Asia's most legendary right-hand surf break. Wild elephants roam the lagoon nearby."},
+    {name:"Lahugala Elephant Park",type:"wildlife",cat:"Elephant Gathering",rating:4.7,badge:"Elephants",img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&q=75&auto=format&fit=crop",desc:"Up to 150 elephants gather at this small park around the tank every evening."},
+  ],
+  ratnapura:[
+    {name:"Sinharaja Rainforest",type:"wildlife",cat:"Rainforest",rating:5.0,badge:"UNESCO",img:"https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=500&q=75&auto=format&fit=crop",desc:"Sri Lanka's last intact lowland rainforest. 60% of birds are endemic. Extraordinary soundscape."},
+    {name:"Ratnapura Gem Museum",type:"hidden",cat:"Gem Mine",rating:4.5,badge:"Sapphires",img:"https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=500&q=75&auto=format&fit=crop",desc:"Ratnapura means 'City of Gems' — watch sapphires and rubies emerge from the earth."},
+    {name:"Adam's Peak Night Climb",type:"sacred",cat:"Sacred Summit",rating:5.0,badge:"Pilgrim Peak",img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&q=75&auto=format&fit=crop",desc:"Night climb with thousands of pilgrims bearing lanterns. Sunrise from the sacred footprint."},
+  ],
+  kegalle:[
+    {name:"Pinnawala Elephant Orphanage",type:"popular",cat:"Elephant Care",rating:4.6,badge:"Elephants",img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&q=75&auto=format&fit=crop",desc:"Baby and orphaned elephants bathed in the river twice daily. Emotional experience."},
+    {name:"Kitulgala Rafting",type:"popular",cat:"White Water",rating:4.9,badge:"White Water",img:"https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=500&q=75&auto=format&fit=crop",desc:"Grade 3-4 rapids through jungle gorges. The Bridge on the River Kwai filming location."},
+    {name:"Ambuluwawa Tower",type:"hidden",cat:"Unique Viewpoint",rating:4.6,badge:"Spiral Tower",img:"https://images.unsplash.com/photo-1588598198321-9735fd52430d?w=500&q=75&auto=format&fit=crop",desc:"Sri Lanka's most unusual viewpoint — a helical tower rising from biodiversity forest."},
+  ],
+  badulla:[
+    {name:"Ella Rock Trek",type:"popular",cat:"Highland Trek",rating:4.9,badge:"Summit Views",img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&q=75&auto=format&fit=crop",desc:"Train-track walk to a summit with views across six provinces in clear weather."},
+    {name:"Nine Arches Bridge",type:"popular",cat:"Engineering Icon",rating:5.0,badge:"Photo Icon",img:"https://images.unsplash.com/photo-1588598198321-9735fd52430d?w=500&q=75&auto=format&fit=crop",desc:"Colonial-era viaduct through tea estates. The blue train crosses at 8:45am."},
+    {name:"Diyaluma Falls Natural Pools",type:"hidden",cat:"Waterfall",rating:4.9,badge:"Natural Pools",img:"https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=500&q=75&auto=format&fit=crop",desc:"Cliff jumping into jade infinity pools at the top of Sri Lanka's second tallest falls."},
+  ],
+  moneragala:[
+    {name:"Maligawila Buddha",type:"sacred",cat:"Ancient Statue",rating:4.7,badge:"Colossal",img:"https://images.unsplash.com/photo-1609948543911-c5a2bf3f7bb0?w=500&q=75&auto=format&fit=crop",desc:"Colossal 11m standing Buddha from the 7th century. Remote jungle setting."},
+    {name:"Gal Oya National Park",type:"wildlife",cat:"Boat Safari",rating:4.8,badge:"Boat Safari",img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&q=75&auto=format&fit=crop",desc:"Sri Lanka's only boat safari — wild elephants swim between islands in the reservoir."},
+    {name:"Kataragama Sacred Town",type:"sacred",cat:"Multi-Faith Shrine",rating:4.8,badge:"Multi-Faith",img:"https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=500&q=75&auto=format&fit=crop",desc:"Revered by Buddhists, Hindus and Muslims. Firewalking during the Esala festival."},
+  ],
+  kurunegala:[
+    {name:"Yapahuwa Rock Fortress",type:"hidden",cat:"Rock Fortress",rating:4.6,badge:"Undiscovered",img:"https://images.unsplash.com/photo-1609948543911-c5a2bf3f7bb0?w=500&q=75&auto=format&fit=crop",desc:"Short-lived 13th-century capital on a 90m rock with finest decorative staircase."},
+    {name:"Ridi Vihara Silver Cave Temple",type:"sacred",cat:"Cave Temple",rating:4.7,badge:"Silver Temple",img:"https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=500&q=75&auto=format&fit=crop",desc:"Cave temple whose walls are inlaid with silver ore from an ancient mine — breathtaking."},
+    {name:"Arankele Forest Monastery",type:"hidden",cat:"Forest Monastery",rating:4.6,badge:"Forest Solitude",img:"https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=500&q=75&auto=format&fit=crop",desc:"Living monastery where forest monks meditate in stone cells deep in jungle."},
+  ],
+  puttalam:[
+    {name:"Kalpitiya Dolphin Watching",type:"wildlife",cat:"Marine Life",rating:4.9,badge:"300+ Dolphins",img:"https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=500&q=75&auto=format&fit=crop",desc:"Asia's largest spinner dolphin pods. Blue whales in open ocean beyond the lagoon."},
+    {name:"Kalpitiya Fort & Lagoon",type:"hidden",cat:"Colonial Ruin",rating:4.6,badge:"Dutch Fort",img:"https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=500&q=75&auto=format&fit=crop",desc:"Crumbling Dutch fort on a lagoon spit with spinner dolphins just offshore at dawn."},
+    {name:"Wilpattu National Park",type:"wildlife",cat:"Leopard Safari",rating:4.9,badge:"Wild Leopards",img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&q=75&auto=format&fit=crop",desc:"Sri Lanka's largest park. Dense jungle leopards rarely seen by tourists."},
+  ],
+  anuradhapura:[
+    {name:"Sri Maha Bodhi Tree",type:"sacred",cat:"Sacred Tree",rating:5.0,badge:"Oldest Tree",img:"https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=500&q=75&auto=format&fit=crop",desc:"The world's oldest historically documented tree — a branch of the original Bodhi tree, 2,300 years old."},
+    {name:"Jetavanarama Dagoba",type:"sacred",cat:"Ancient Dagoba",rating:4.9,badge:"3rd Tallest",img:"https://images.unsplash.com/photo-1609948543911-c5a2bf3f7bb0?w=500&q=75&auto=format&fit=crop",desc:"Once the third tallest structure on Earth. The ancient brickwork is staggering."},
+    {name:"Ritigala Forest Monastery",type:"hidden",cat:"Sacred Ruins",rating:4.9,badge:"Off-the-Beaten",img:"https://images.unsplash.com/photo-1588598198321-9735fd52430d?w=500&q=75&auto=format&fit=crop",desc:"2nd-century rock ruins in a mist-shrouded nature reserve. Almost no visitors."},
+  ],
+  polonnaruwa:[
+    {name:"Polonnaruwa Ancient City",type:"popular",cat:"Medieval Capital",rating:4.9,badge:"UNESCO",img:"https://images.unsplash.com/photo-1609948543911-c5a2bf3f7bb0?w=500&q=75&auto=format&fit=crop",desc:"Mediaeval capital with colossal Buddhas, moonstones and monkeys in the ruins."},
+    {name:"Gal Vihara Rock Buddhas",type:"sacred",cat:"Rock Carvings",rating:5.0,badge:"12th Century",img:"https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=500&q=75&auto=format&fit=crop",desc:"Four colossal Buddhas carved from a single granite face. The finest rock carving in Sri Lanka."},
+    {name:"Minneriya Elephant Gathering",type:"wildlife",cat:"Wildlife Safari",rating:5.0,badge:"The Gathering",img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&q=75&auto=format&fit=crop",desc:"300 wild elephants at one lake Aug–Oct. One of the world's greatest wildlife spectacles."},
+  ],
+};
+
+const TYPE_COLORS={popular:'var(--gold2)',hidden:'var(--neon)',sacred:'var(--blue)',wildlife:'var(--orange)'};
+const TYPE_DOTS={'popular':'#b89050','hidden':'#39ff7a','sacred':'#00e5ff','wildlife':'#ff6b35'};
+
+/* ─── BUILD DISTRICT LIST SIDEBAR ─── */
+function buildSidebar(){
+  const c=document.getElementById('dl-inner');
+  const provinces=[...new Set(DISTRICTS.map(d=>d.province))];
+  provinces.forEach(prov=>{
+    const lbl=document.createElement('div');lbl.className='dl-label';lbl.textContent=prov;c.appendChild(lbl);
+    DISTRICTS.filter(d=>d.province===prov).forEach(d=>{
+      const item=document.createElement('div');item.className='dl-item';item.id='dl-'+d.id;
+      const places=PLACES[d.id]||[];
+      item.innerHTML=`<div class="dl-dot" style="background:${TYPE_DOTS[d.color]}"></div><div class="dl-name">${d.name}</div><div class="dl-count">${places.length}</div>`;
+      item.addEventListener('click',()=>selectDistrict(d.id));
+      c.appendChild(item);
+    });
+  });
+}
+
+/* ─── BUILD SVG MAP ─── */
+function buildMap(){
+  const dg=document.getElementById('districts-g');
+  const mg=document.getElementById('markers-g');
+
+  DISTRICTS.forEach(d=>{
+    // District path
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',d.path);
+    path.setAttribute('class','district');
+    path.setAttribute('id','dp-'+d.id);
+    path.setAttribute('data-id',d.id);
+    path.addEventListener('click',()=>selectDistrict(d.id));
+    dg.appendChild(path);
+    // Label
+    const txt=document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('x',d.cx);txt.setAttribute('y',d.cy+2);
+    txt.setAttribute('class','d-label');txt.setAttribute('id','dl2-'+d.id);
+    txt.textContent=d.name.length>9?d.name.slice(0,9)+'…':d.name;
+    dg.appendChild(txt);
+  });
+
+  // Place markers
+  DISTRICTS.forEach(d=>{
+    const places=PLACES[d.id]||[];
+    places.forEach((p,i)=>{
+      // offset markers slightly from district center
+      const angle=(i/places.length)*2*Math.PI-0.5;
+      const r=16;
+      const mx2=d.cx+Math.cos(angle)*r;
+      const my2=d.cy+Math.sin(angle)*r;
+      const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+      g.setAttribute('class','marker-group m-'+p.type);
+      g.setAttribute('transform',`translate(${mx2},${my2})`);
+      g.setAttribute('data-did',d.id);g.setAttribute('data-pidx',i);
+      const pulse=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      pulse.setAttribute('class','marker-pulse');
+      pulse.style.animationDelay=(i*0.4+d.cx*0.01)+'s';
+      const dot2=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot2.setAttribute('class','marker-dot');
+      g.appendChild(pulse);g.appendChild(dot2);
+      // marker hover tooltip
+      g.addEventListener('mouseenter',e=>showMtt(p.name,e));
+      g.addEventListener('mousemove',e=>moveMtt(e));
+      g.addEventListener('mouseleave',hideMtt);
+      g.addEventListener('click',e=>{e.stopPropagation();selectDistrict(d.id);});
+      mg.appendChild(g);
+    });
+  });
+}
+
+/* ─── TOOLTIP ─── */
+const mtt=document.getElementById('mtt');
+function showMtt(name,e){mtt.textContent=name;mtt.style.opacity='1';moveMtt(e);}
+function moveMtt(e){mtt.style.left=(e.clientX+14)+'px';mtt.style.top=(e.clientY-10)+'px';}
+function hideMtt(){mtt.style.opacity='0';}
+
+/* ─── PANEL ─── */
+let activeDistrict=null;
+function selectDistrict(id){
+  if(activeDistrict===id){closePanel();return;}
+  activeDistrict=id;
+  const d=DISTRICTS.find(x=>x.id===id);
+  if(!d)return;
+
+  // Update district highlighting
+  document.querySelectorAll('.district').forEach(p=>{p.classList.remove('active','dim');p.classList.add('dim')});
+  document.querySelectorAll('.d-label').forEach(t=>t.classList.remove('active-lbl'));
+  const active=document.getElementById('dp-'+id);
+  if(active){active.classList.remove('dim');active.classList.add('active');}
+  const lbl=document.getElementById('dl2-'+id);
+  if(lbl)lbl.classList.add('active-lbl');
+
+  // Sidebar
+  document.querySelectorAll('.dl-item').forEach(i=>i.classList.remove('active'));
+  const dlItem=document.getElementById('dl-'+id);if(dlItem)dlItem.classList.add('active');
+
+  // Panel header
+  document.getElementById('ip-eyebrow').textContent=d.province+' Province';
+  document.getElementById('ip-dname').textContent=d.name+' District';
+  document.getElementById('ip-dsub').textContent=(PLACES[id]||[]).length+' hidden gems curated for you';
+
+  // Places
+  const list=document.getElementById('ip-places');
+  list.innerHTML='';
+  const places=PLACES[id]||[];
+  places.forEach((p,i)=>{
+    const card=document.createElement('div');
+    card.className='ip-place';
+    card.style.opacity='0';card.style.transform='translateY(16px)';
+    card.style.transition=`opacity .4s ${i*0.1}s,transform .4s ${i*0.1}s,border-color .3s,box-shadow .3s`;
+    const badgeClass='badge-'+p.type;
+    card.innerHTML=`
+      <div class="ip-place-img-w">
+        <img class="ip-place-img" src="${p.img}" alt="${p.name}" loading="lazy">
+        <div class="ip-place-overlay"></div>
+        <div class="ip-place-type-badge ${badgeClass}">${p.badge}</div>
+        <div class="ip-place-rating">★ ${p.rating}</div>
+        <div class="ip-place-detail">
+          <div class="ip-detail-name">${p.name}</div>
+          <div class="ip-detail-desc">${p.desc}</div>
+        </div>
+      </div>
+      <div class="ip-place-body">
+        <div class="ip-place-name">${p.name}</div>
+        <div class="ip-place-meta">
+          <div class="ip-place-cat">${p.cat}</div>
+          <div class="ip-place-stars">★ ${p.rating}</div>
+        </div>
+      </div>`;
+    list.appendChild(card);
+    // add hover cursor
+    card.addEventListener('mouseenter',()=>ring.classList.add('big'));
+    card.addEventListener('mouseleave',()=>ring.classList.remove('big'));
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{card.style.opacity='1';card.style.transform='translateY(0)'}));
+  });
+
+  // Open panel
+  const panel=document.getElementById('info-panel');
+  panel.classList.add('open');
+  document.getElementById('zoom-ctrl').classList.remove('shift');
+
+  // Pan map slightly toward selected district
+  panToDistrict(d);
+}
+
+function closePanel(){
+  document.getElementById('info-panel').classList.remove('open');
+  document.getElementById('zoom-ctrl').classList.add('shift');
+  document.querySelectorAll('.district').forEach(p=>{p.classList.remove('active','dim')});
+  document.querySelectorAll('.d-label').forEach(t=>t.classList.remove('active-lbl'));
+  document.querySelectorAll('.dl-item').forEach(i=>i.classList.remove('active'));
+  activeDistrict=null;
+}
+
+/* ─── ZOOM & PAN ─── */
+let scale=1,tx=0,ty=0;
+const vp=document.getElementById('map-vp');
+function applyTransform(){vp.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`;}
+function zoomIn(){scale=Math.min(scale*1.3,3);applyTransform();}
+function zoomOut(){scale=Math.max(scale/1.3,0.5);applyTransform();}
+function zoomReset(){scale=1;tx=0;ty=0;applyTransform();}
+function panToDistrict(d){
+  // Gentle pan — center on district
+  const svgWrap=document.getElementById('map-svg-wrap');
+  const rect=svgWrap.getBoundingClientRect();
+  const svgW=rect.width,svgH=rect.height;
+  const relX=d.cx/400,relY=d.cy/580;
+  tx=(0.5-relX)*svgW*0.18;ty=(0.5-relY)*svgH*0.18;
+  applyTransform();
+}
+
+// Mouse wheel zoom
+document.getElementById('stage').addEventListener('wheel',e=>{
+  e.preventDefault();
+  if(e.deltaY<0)scale=Math.min(scale*1.12,3);
+  else scale=Math.max(scale/1.12,0.5);
+  applyTransform();
+},{passive:false});
+
+// Drag to pan
+let dragging=false,startX=0,startY=0,startTx=0,startTy=0;
+const stage=document.getElementById('stage');
+stage.addEventListener('mousedown',e=>{dragging=true;startX=e.clientX;startY=e.clientY;startTx=tx;startTy=ty;stage.style.cursor='grabbing';});
+document.addEventListener('mousemove',e=>{if(!dragging)return;tx=startTx+(e.clientX-startX);ty=startTy+(e.clientY-startY);applyTransform();});
+document.addEventListener('mouseup',()=>{dragging=false;stage.style.cursor='';});
+
+// Touch
+let pt1=null,pt2=null;
+stage.addEventListener('touchstart',e=>{if(e.touches.length===1){dragging=true;startX=e.touches[0].clientX;startY=e.touches[0].clientY;startTx=tx;startTy=ty;}else if(e.touches.length===2){pt1={x:e.touches[0].clientX,y:e.touches[0].clientY};pt2={x:e.touches[1].clientX,y:e.touches[1].clientY};}},{passive:true});
+stage.addEventListener('touchmove',e=>{if(e.touches.length===1&&dragging){tx=startTx+(e.touches[0].clientX-startX);ty=startTy+(e.touches[0].clientY-startY);applyTransform();}else if(e.touches.length===2&&pt1&&pt2){const n1={x:e.touches[0].clientX,y:e.touches[0].clientY};const n2={x:e.touches[1].clientX,y:e.touches[1].clientY};const od=Math.hypot(pt2.x-pt1.x,pt2.y-pt1.y);const nd=Math.hypot(n2.x-n1.x,n2.y-n1.y);scale=Math.max(.5,Math.min(3,scale*(nd/od)));pt1=n1;pt2=n2;applyTransform();}},{passive:true});
+stage.addEventListener('touchend',()=>{dragging=false;pt1=null;pt2=null;});
+
+/* ─── HEATMAP ─── */
+let hmOn=false;
+function toggleHeatmap(){
+  hmOn=!hmOn;
+  document.getElementById('hm-toggle').classList.toggle('on',hmOn);
+  document.querySelectorAll('.district').forEach(p=>{
+    const id=p.getAttribute('data-id');
+    const d=DISTRICTS.find(x=>x.id===id);
+    if(hmOn){
+      const hm={'popular':'rgba(154,114,56,.35)','hidden':'rgba(57,255,122,.18)','sacred':'rgba(0,229,255,.2)','wildlife':'rgba(255,107,53,.25)'};
+      p.style.fill=hm[d.color]||'#223d2c';
+    } else {
+      p.style.fill='';
+    }
+  });
+}
+
+/* ─── INIT ─── */
+buildSidebar();
+buildMap();
+
+// Cursor enlarges on interactables
+document.querySelectorAll('a,button,.dl-item,.zc-btn,.marker-group').forEach(el=>{
+  el.addEventListener('mouseenter',()=>ring.classList.add('big'));
+  el.addEventListener('mouseleave',()=>ring.classList.remove('big'));
+});
+</script>
+</body>
+</html>

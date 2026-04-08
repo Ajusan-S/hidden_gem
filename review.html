@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stories & Reviews — Hidden Gem Sri Lanka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0d1510;--ink2:#131d16;--ink3:#192219;
+  --surface:#f2ede3;--surface2:#e8e2d6;
+  --gold:#9a7238;--c-gold:#c4923a;--gold2:#b89050;--gold3:#cead6a;
+  --green:#284438;--green2:#3a5e50;
+  --red:#c0444a;--red-dim:rgba(192,68,74,.12);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Jost',sans-serif;background:var(--ink);color:var(--surface);overflow-x:hidden;-webkit-font-smoothing:antialiased;cursor:none}
+
+/* ─── CURSOR ─── */
+#cdot{position:fixed;z-index:99999;width:7px;height:7px;background:var(--gold3);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);will-change:left,top}
+#cring{position:fixed;z-index:99998;width:32px;height:32px;border:1px solid rgba(184,144,80,.4);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s;will-change:left,top}
+#cring.big{width:52px;height:52px;border-color:var(--gold2)}
+@media(hover:none){#cdot,#cring{display:none}body{cursor:auto}}
+
+/* ─── NAV ─── */
+.rv-nav{position:fixed;top:0;left:0;right:0;z-index:900;height:62px;padding:0 clamp(1rem,3vw,2.5rem);display:flex;align-items:center;justify-content:space-between;background:rgba(13,21,16,.92);backdrop-filter:blur(22px);border-bottom:1px solid rgba(255,255,255,.07);gap:1rem}
+.rv-logo{text-decoration:none;flex-shrink:0}
+.rv-logo-m{font-family:'Playfair Display',serif;font-size:clamp(.95rem,2.5vw,1.15rem);color:var(--surface);letter-spacing:.06em;display:block;line-height:1.2}
+.rv-logo-s{font-size:.5rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold2);display:block}
+.rv-nav-right{display:flex;align-items:center;gap:clamp(.5rem,1.5vw,1.2rem)}
+.rv-back{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(242,237,227,.35);text-decoration:none;display:flex;align-items:center;gap:.4rem;transition:color .3s}
+.rv-back:hover{color:var(--gold2)}
+.community-pill{padding:.25rem .85rem;border:1px solid rgba(184,144,80,.25);border-radius:100px;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);background:rgba(154,114,56,.06)}
+
+/* ─── HERO ─── */
+.rv-hero{padding:clamp(5rem,12vw,8rem) clamp(1.2rem,4vw,5%) clamp(3rem,6vw,4rem);background:var(--ink2);border-bottom:1px solid rgba(255,255,255,.05);position:relative;overflow:hidden;margin-top:62px}
+.rv-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 100%,rgba(40,68,56,.18),transparent 70%);pointer-events:none}
+.rv-hero-inner{max-width:700px;position:relative;z-index:1}
+.rv-hero-lbl{font-size:.6rem;letter-spacing:.42em;text-transform:uppercase;color:var(--gold2);margin-bottom:.75rem;opacity:0;animation:riseUp .7s .1s forwards}
+.rv-hero-h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5.5vw,4rem);font-weight:400;line-height:1.1;color:var(--surface);margin-bottom:1rem;opacity:0;animation:riseUp .7s .25s forwards}
+.rv-hero-h1 em{font-style:italic;color:var(--gold3)}
+.rv-hero-p{font-size:clamp(.82rem,2vw,.95rem);font-weight:300;color:rgba(242,237,227,.45);line-height:1.85;max-width:480px;margin-bottom:2rem;opacity:0;animation:riseUp .7s .4s forwards}
+.rv-hero-stats{display:flex;gap:clamp(1.5rem,4vw,3rem);flex-wrap:wrap;opacity:0;animation:riseUp .7s .55s forwards}
+.rv-stat{text-align:center}
+.rv-stat-n{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,3vw,2rem);color:var(--surface);display:block;line-height:1}
+.rv-stat-l{font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(242,237,227,.3);display:block;margin-top:.2rem}
+@keyframes riseUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── CTA BANNER ─── */
+.cta-banner{background:linear-gradient(135deg,rgba(154,114,56,.12),rgba(40,68,56,.12));border:1px solid rgba(184,144,80,.15);border-radius:3px;padding:clamp(1.2rem,3vw,1.8rem) clamp(1.2rem,3vw,2rem);margin:clamp(1.5rem,3vw,2.5rem) clamp(1.2rem,3vw,5%) clamp(1rem,2vw,1.5rem);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;position:relative;overflow:hidden}
+.cta-banner::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(184,144,80,.35),transparent)}
+.cta-banner-text h3{font-family:'Playfair Display',serif;font-size:clamp(1.1rem,2.5vw,1.4rem);font-weight:400;color:var(--surface);margin-bottom:.3rem}
+.cta-banner-text p{font-size:.8rem;font-weight:300;color:rgba(242,237,227,.42);line-height:1.65}
+.cta-open-btn{padding:.82rem clamp(1.5rem,3vw,2.2rem);background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:.72rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;border:none;border-radius:2px;cursor:pointer;white-space:nowrap;transition:background .3s,transform .2s;flex-shrink:0}
+.cta-open-btn:hover{background:var(--gold2);transform:translateY(-2px)}
+
+/* ─── MAIN LAYOUT ─── */
+.rv-main{display:grid;grid-template-columns:1fr clamp(280px,30%,360px);gap:clamp(1rem,2vw,2rem);padding:clamp(1.5rem,3vw,2.5rem) clamp(1.2rem,3vw,5%);max-width:1400px;margin:0 auto;align-items:start}
+
+/* ─── FILTERS ─── */
+.feed-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.4rem;flex-wrap:wrap;gap:.8rem}
+.feed-title{font-family:'Playfair Display',serif;font-size:clamp(1.2rem,2.5vw,1.6rem);font-weight:400;color:var(--surface)}
+.filter-row{display:flex;gap:.5rem;flex-wrap:wrap}
+.filter-btn{padding:.3rem .85rem;border-radius:100px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);font-family:'Jost',sans-serif;font-size:.65rem;letter-spacing:.1em;color:rgba(242,237,227,.45);cursor:pointer;transition:all .25s;-webkit-tap-highlight-color:transparent}
+.filter-btn.on,.filter-btn:hover{background:rgba(154,114,56,.12);border-color:rgba(154,114,56,.3);color:var(--gold3)}
+.type-tabs{display:flex;gap:.4rem;margin-bottom:1.2rem;border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:.8rem;flex-wrap:wrap}
+.type-tab{padding:.35rem .9rem;border-radius:100px;font-size:.65rem;letter-spacing:.1em;color:rgba(242,237,227,.38);cursor:pointer;transition:all .25s;border:1px solid transparent;-webkit-tap-highlight-color:transparent}
+.type-tab.on{color:var(--gold3);border-color:rgba(154,114,56,.25);background:rgba(154,114,56,.08)}
+
+/* ─── FEED ─── */
+#reviews-feed{display:flex;flex-direction:column;gap:1.2rem}
+#stories-feed{display:flex;flex-direction:column;gap:1.2rem}
+.feed-section{display:none}
+.feed-section.active{display:flex;flex-direction:column;gap:1.2rem}
+
+/* ─── REVIEW CARD ─── */
+.rv-card{background:var(--ink2);border:1px solid rgba(255,255,255,.06);border-radius:3px;padding:clamp(1rem,2.5vw,1.4rem) clamp(1rem,2.5vw,1.5rem);position:relative;transition:border-color .3s,box-shadow .3s;opacity:0;transform:translateY(20px);animation:cardRise .55s forwards}
+@keyframes cardRise{to{opacity:1;transform:translateY(0)}}
+.rv-card:hover{border-color:rgba(154,114,56,.18);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.rv-card.user-card{border-color:rgba(154,114,56,.2);background:linear-gradient(135deg,rgba(154,114,56,.04),var(--ink2))}
+.rv-card.user-card::before{content:'YOUR STORY';position:absolute;top:.7rem;right:.8rem;font-size:.48rem;letter-spacing:.2em;color:rgba(154,114,56,.5);background:rgba(154,114,56,.08);padding:.15rem .5rem;border-radius:100px;border:1px solid rgba(154,114,56,.15)}
+
+/* card top */
+.card-top{display:flex;align-items:flex-start;gap:.85rem;margin-bottom:1rem}
+.card-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(154,114,56,.2);background:var(--ink3)}
+.card-avatar-placeholder{width:44px;height:44px;border-radius:50%;background:var(--green);border:2px solid rgba(154,114,56,.2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.1rem;font-style:italic;color:var(--gold3);flex-shrink:0;text-transform:uppercase}
+.card-meta{flex:1;min-width:0}
+.card-name{font-size:.88rem;font-weight:500;color:var(--surface);display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.card-flag{font-size:.95rem}
+.card-country{font-size:.68rem;font-weight:300;color:rgba(242,237,227,.35);margin-top:.1rem;display:flex;align-items:center;gap:.35rem}
+.card-date{font-size:.6rem;color:rgba(242,237,227,.22);margin-top:.08rem}
+.card-stars{display:flex;gap:2px;margin-top:.25rem}
+.star-svg{width:14px;height:14px;flex-shrink:0}
+.star-full{fill:var(--gold2)}
+.star-empty{fill:rgba(255,255,255,.12)}
+
+/* card body */
+.card-place-badge{display:inline-block;padding:.14rem .65rem;border-radius:100px;background:rgba(154,114,56,.08);border:1px solid rgba(154,114,56,.15);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);margin-bottom:.6rem}
+.card-text{font-size:clamp(.78rem,2vw,.85rem);font-weight:300;color:rgba(242,237,227,.62);line-height:1.82;margin-bottom:1rem}
+.card-img-attached{width:100%;max-height:220px;object-fit:cover;border-radius:2px;margin-bottom:.9rem;border:1px solid rgba(255,255,255,.06)}
+
+/* card footer */
+.card-foot{display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+.card-type-lbl{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(242,237,227,.22)}
+.like-btn{display:flex;align-items:center;gap:.4rem;background:none;border:none;cursor:pointer;font-size:.72rem;color:rgba(242,237,227,.35);transition:color .25s;font-family:'Jost',sans-serif;padding:0;-webkit-tap-highlight-color:transparent}
+.like-btn:hover,.like-btn.liked{color:var(--red)}
+.like-btn.liked .heart-ico{animation:heartPop .3s cubic-bezier(.36,.07,.19,.97)}
+.heart-ico{font-size:.9rem;transition:transform .2s}
+@keyframes heartPop{0%{transform:scale(1)}50%{transform:scale(1.5)}100%{transform:scale(1)}}
+
+/* ─── STORY CARD ─── */
+.story-card{background:var(--ink2);border:1px solid rgba(255,255,255,.06);border-radius:3px;overflow:hidden;transition:border-color .3s,box-shadow .3s;opacity:0;transform:translateY(20px);animation:cardRise .55s forwards}
+.story-card:hover{border-color:rgba(154,114,56,.18);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.story-img-wrap{overflow:hidden;aspect-ratio:16/8;position:relative}
+.story-img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(.65) saturate(.85);transition:transform .7s,filter .7s}
+.story-card:hover .story-img{transform:scale(1.05);filter:brightness(.55) saturate(1)}
+.story-body{padding:1.2rem 1.4rem 1.3rem}
+.story-body::before{content:'';display:block;width:100%;height:1px;margin-bottom:.9rem;background:linear-gradient(90deg,transparent,rgba(154,114,56,.18),transparent)}
+.story-title{font-family:'Playfair Display',serif;font-size:clamp(1rem,2.5vw,1.2rem);font-weight:400;color:var(--surface);margin-bottom:.4rem;line-height:1.25}
+.story-excerpt{font-size:.78rem;font-weight:300;color:rgba(242,237,227,.44);line-height:1.75;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:.9rem}
+.story-author{display:flex;align-items:center;gap:.65rem}
+.story-av{width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;border:1px solid rgba(154,114,56,.2);background:var(--ink3)}
+.story-av-ph{width:32px;height:32px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.85rem;font-style:italic;color:var(--gold3);flex-shrink:0;text-transform:uppercase}
+.story-author-name{font-size:.76rem;font-weight:400;color:rgba(242,237,227,.55)}
+.story-author-meta{font-size:.62rem;color:rgba(242,237,227,.25)}
+
+/* ─── SIDEBAR ─── */
+.rv-sidebar{display:flex;flex-direction:column;gap:1.4rem;position:sticky;top:80px}
+.sb-widget{background:var(--ink2);border:1px solid rgba(255,255,255,.06);border-radius:3px;padding:1.3rem 1.4rem}
+.sb-widget-title{font-family:'Playfair Display',serif;font-size:1rem;color:var(--surface);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.sb-widget-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.06)}
+
+/* rating breakdown */
+.rating-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem}
+.rating-lbl{font-size:.72rem;color:rgba(242,237,227,.38);width:1rem;text-align:right;flex-shrink:0}
+.rating-bar-bg{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.rating-bar-fill{height:100%;background:var(--gold2);border-radius:2px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.rating-count{font-size:.65rem;color:rgba(242,237,227,.22);flex-shrink:0;min-width:20px;text-align:right}
+
+/* country cloud */
+.country-chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.cc-chip{padding:.22rem .7rem;border-radius:100px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);font-size:.65rem;color:rgba(242,237,227,.42);cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:.28rem}
+.cc-chip:hover,.cc-chip.on{background:rgba(154,114,56,.1);border-color:rgba(154,114,56,.2);color:var(--gold3)}
+
+/* overall score */
+.big-score{text-align:center;padding:.5rem 0 .8rem}
+.big-score-num{font-family:'Playfair Display',serif;font-size:3.5rem;font-weight:400;color:var(--surface);line-height:1;display:block}
+.big-score-stars{display:flex;justify-content:center;gap:3px;margin:.4rem 0}
+.big-score-lbl{font-size:.65rem;color:rgba(242,237,227,.28);letter-spacing:.1em;text-transform:uppercase}
+
+/* ─── WRITE MODAL ─── */
+.modal-overlay{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--ink2);border:1px solid rgba(255,255,255,.1);border-radius:4px;width:100%;max-width:620px;position:relative;max-height:calc(100dvh - 2rem);overflow-y:auto;animation:modalIn .35s cubic-bezier(.4,0,.2,1)}
+@keyframes modalIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.modal-box::-webkit-scrollbar{width:3px}
+.modal-box::-webkit-scrollbar-thumb{background:rgba(154,114,56,.2);border-radius:2px}
+.modal-header{padding:1.5rem 1.8rem 0;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
+.modal-title{font-family:'Playfair Display',serif;font-size:clamp(1.2rem,3vw,1.5rem);font-weight:400;color:var(--surface)}
+.modal-close{background:none;border:1px solid rgba(255,255,255,.1);color:rgba(242,237,227,.4);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .25s;flex-shrink:0;line-height:1}
+.modal-close:hover{border-color:rgba(255,255,255,.3);color:var(--surface)}
+.modal-body{padding:1.3rem 1.8rem 1.8rem;display:flex;flex-direction:column;gap:1rem}
+.modal-tabs{display:flex;gap:.4rem;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:2px;padding:.3rem}
+.modal-tab{flex:1;padding:.55rem;text-align:center;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(242,237,227,.35);cursor:pointer;border-radius:1px;transition:all .25s;border:none;background:transparent;font-family:'Jost',sans-serif}
+.modal-tab.on{background:var(--gold);color:var(--ink);font-weight:500}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+.form-group{display:flex;flex-direction:column;gap:.45rem}
+.form-group.full{grid-column:1/-1}
+.form-lbl{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold2)}
+.form-inp{
+  padding:.72rem 1rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  border-radius:2px;color:var(--surface);font-family:'Jost',sans-serif;font-size:.84rem;font-weight:300;
+  outline:none;transition:border-color .3s;width:100%;
+}
+.form-inp:focus{border-color:rgba(154,114,56,.4)}
+.form-inp::placeholder{color:rgba(242,237,227,.2)}
+textarea.form-inp{resize:vertical;min-height:110px;line-height:1.7}
+select.form-inp{appearance:none;-webkit-appearance:none;cursor:pointer}
+
+/* star picker */
+.star-picker{display:flex;gap:.4rem;margin-top:.1rem}
+.sp-star{font-size:1.5rem;cursor:pointer;color:rgba(255,255,255,.15);transition:color .2s,transform .15s;-webkit-tap-highlight-color:transparent}
+.sp-star.lit{color:var(--gold2)}
+.sp-star:hover{transform:scale(1.2)}
+
+/* image upload */
+.img-upload-wrap{position:relative;border:1px dashed rgba(255,255,255,.1);border-radius:2px;padding:1.2rem;text-align:center;cursor:pointer;transition:border-color .3s;background:rgba(255,255,255,.02)}
+.img-upload-wrap:hover{border-color:rgba(154,114,56,.3)}
+.img-upload-wrap input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.img-upload-lbl{font-size:.76rem;color:rgba(242,237,227,.3);pointer-events:none}
+.img-preview{width:100%;max-height:150px;object-fit:cover;border-radius:2px;display:none;margin-top:.6rem}
+.img-upload-hint{font-size:.62rem;color:rgba(242,237,227,.2);margin-top:.3rem}
+
+.submit-review-btn{padding:.9rem;background:var(--gold);color:var(--ink);font-family:'Jost',sans-serif;font-size:.74rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;border:none;border-radius:2px;cursor:pointer;transition:background .3s,transform .2s;position:relative;overflow:hidden}
+.submit-review-btn:hover{background:var(--gold2);transform:translateY(-1px)}
+.submit-review-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.form-err{font-size:.7rem;color:#c07070;display:none}
+.form-err.show{display:block}
+.submit-success{display:none;text-align:center;padding:1.5rem 0}
+.submit-success.show{display:block}
+.submit-success-icon{font-size:2rem;margin-bottom:.6rem}
+.submit-success-title{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--surface);margin-bottom:.3rem}
+.submit-success-sub{font-size:.78rem;color:rgba(242,237,227,.38);font-weight:300}
+
+/* ─── LOADING STATE ─── */
+.feed-loading{display:flex;align-items:center;gap:.6rem;padding:2rem;color:rgba(242,237,227,.3);font-size:.8rem}
+.loading-dot{width:6px;height:6px;border-radius:50%;background:var(--gold2);animation:dotBounce 1.2s ease-in-out infinite}
+.loading-dot:nth-child(2){animation-delay:.15s}.loading-dot:nth-child(3){animation-delay:.3s}
+@keyframes dotBounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+
+/* ─── EMPTY STATE ─── */
+.feed-empty{text-align:center;padding:3rem 1rem;color:rgba(242,237,227,.25)}
+.feed-empty-icon{font-size:2rem;margin-bottom:.6rem;opacity:.4}
+.feed-empty-txt{font-size:.82rem;font-weight:300}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:1000px){
+  .rv-main{grid-template-columns:1fr}
+  .rv-sidebar{position:static;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+}
+@media(max-width:700px){
+  .rv-main{padding:1.2rem 1rem}
+  .form-row{grid-template-columns:1fr}
+  .modal-body{padding:1rem 1.2rem 1.4rem}
+  .modal-header{padding:1.2rem 1.2rem 0}
+  .cta-banner{flex-direction:column;align-items:flex-start}
+  .rv-sidebar{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .rv-hero{padding:4.5rem 1rem 2rem}
+  .filter-row{gap:.35rem}
+  .filter-btn,.type-tab{font-size:.6rem;padding:.27rem .7rem}
+  .card-top{gap:.65rem}
+  .card-avatar,.card-avatar-placeholder{width:38px;height:38px}
+  .community-pill{display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="cdot"></div>
+<div id="cring"></div>
+
+<!-- ══════════════ WRITE MODAL ══════════════ -->
+<div class="modal-overlay" id="write-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2 class="modal-title">Share Your Story</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-form-body">
+      <!-- TABS -->
+      <div class="modal-tabs">
+        <button class="modal-tab on" id="tab-review" onclick="switchTab('review')">Write a Review</button>
+        <button class="modal-tab" id="tab-story" onclick="switchTab('story')">Share a Story</button>
+      </div>
+
+      <!-- NAME + COUNTRY -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-lbl">Your Name</label>
+          <input class="form-inp" id="inp-name" type="text" placeholder="e.g. Sophie A.">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Country</label>
+          <div style="position:relative">
+            <select class="form-inp" id="inp-country" style="padding-right:2rem">
+              <option value="">— Select country —</option>
+              <option>🇦🇺 Australia</option><option>🇨🇦 Canada</option><option>🇨🇳 China</option>
+              <option>🇫🇷 France</option><option>🇩🇪 Germany</option><option>🇮🇳 India</option>
+              <option>🇮🇩 Indonesia</option><option>🇮🇪 Ireland</option><option>🇮🇹 Italy</option>
+              <option>🇯🇵 Japan</option><option>🇲🇾 Malaysia</option><option>🇳🇱 Netherlands</option>
+              <option>🇳🇿 New Zealand</option><option>🇸🇬 Singapore</option><option>🇰🇷 South Korea</option>
+              <option>🇱🇰 Sri Lanka</option><option>🇸🇪 Sweden</option><option>🇨🇭 Switzerland</option>
+              <option>🇹🇭 Thailand</option><option>🇬🇧 United Kingdom</option><option>🇺🇸 United States</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- PLACE + STARS (review only) -->
+      <div id="review-fields">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-lbl">Place Visited</label>
+            <input class="form-inp" id="inp-place" type="text" placeholder="e.g. Ritigala Forest">
+          </div>
+          <div class="form-group">
+            <label class="form-lbl">Your Rating</label>
+            <div class="star-picker" id="star-picker">
+              <span class="sp-star" data-v="1" onclick="pickStar(1)">★</span>
+              <span class="sp-star" data-v="2" onclick="pickStar(2)">★</span>
+              <span class="sp-star" data-v="3" onclick="pickStar(3)">★</span>
+              <span class="sp-star" data-v="4" onclick="pickStar(4)">★</span>
+              <span class="sp-star" data-v="5" onclick="pickStar(5)">★</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STORY TITLE (story only) -->
+      <div id="story-fields" style="display:none">
+        <div class="form-group full">
+          <label class="form-lbl">Story Title</label>
+          <input class="form-inp" id="inp-story-title" type="text" placeholder="e.g. The Dawn I Found Ritigala Alone">
+        </div>
+      </div>
+
+      <!-- TEXT -->
+      <div class="form-group full">
+        <label class="form-lbl" id="text-lbl">Your Review</label>
+        <textarea class="form-inp" id="inp-text" placeholder="Tell travellers what made this place special…"></textarea>
+      </div>
+
+      <!-- IMAGE UPLOAD -->
+      <div class="form-group full">
+        <label class="form-lbl">Your Photo <span style="color:rgba(242,237,227,.2);font-size:.5rem">(optional)</span></label>
+        <div class="img-upload-wrap">
+          <input type="file" id="img-file" accept="image/*" onchange="previewImg()">
+          <div class="img-upload-lbl" id="upload-lbl">📷 Tap to upload a photo</div>
+          <div class="img-upload-hint">JPG, PNG — max 2 MB · shown with your review</div>
+          <img class="img-preview" id="img-preview">
+        </div>
+      </div>
+
+      <div class="form-err" id="form-err">Please fill in all required fields (name, country, text)</div>
+      <button class="submit-review-btn" id="submit-btn" onclick="submitEntry()">Publish My Review</button>
+    </div>
+    <!-- SUCCESS -->
+    <div class="submit-success" id="submit-success">
+      <div class="submit-success-icon">✦</div>
+      <div class="submit-success-title">Published forever</div>
+      <div class="submit-success-sub">Your story is now visible to every traveller who visits this page.</div>
+      <button class="submit-review-btn" style="margin-top:1.2rem;width:auto;padding:.75rem 2rem" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ NAV ══════════════ -->
+<nav class="rv-nav">
+  <a href="index.html" class="rv-logo">
+    <span class="rv-logo-m">Hidden Gem</span>
+    <span class="rv-logo-s">Sri Lanka</span>
+  </a>
+  <div class="rv-nav-right">
+    <div class="community-pill">Community</div>
+    <a href="index.html" class="rv-back">← BACK TO HOME</a>
+  </div>
+</nav>
+
+<!-- ══════════════ HERO ══════════════ -->
+<div class="rv-hero">
+  <div class="rv-hero-inner">
+    <div class="rv-hero-lbl">Community · Traveller Stories</div>
+    <h1 class="rv-hero-h1">Real journeys.<br><em>Real voices.</em></h1>
+    <p class="rv-hero-p">Every word here was written by someone who walked these paths. No paid reviews. No algorithms. Just honest stories from the travellers who found the real Sri Lanka.</p>
+    <div class="rv-hero-stats">
+      <div class="rv-stat"><span class="rv-stat-n" id="stat-total">—</span><span class="rv-stat-l">Stories & Reviews</span></div>
+      <div class="rv-stat"><span class="rv-stat-n" id="stat-countries">—</span><span class="rv-stat-l">Countries Represented</span></div>
+      <div class="rv-stat"><span class="rv-stat-n" id="stat-avg">—</span><span class="rv-stat-l">Average Rating</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ CTA BANNER ══════════════ -->
+<div class="cta-banner">
+  <div class="cta-banner-text">
+    <h3>Leave your story — it stays forever ✦</h3>
+    <p>Join travellers from 20+ countries who've shared their hidden Sri Lanka moments. Your review is permanently saved and seen by every future visitor.</p>
+  </div>
+  <button class="cta-open-btn" onclick="openModal()">Write a Review or Story</button>
+</div>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="rv-main">
+
+  <!-- FEED -->
+  <div>
+    <div class="feed-header">
+      <div class="feed-title" id="feed-title-txt">Community Feed</div>
+      <div class="filter-row" id="country-filter-row"></div>
+    </div>
+
+    <div class="type-tabs">
+      <div class="type-tab on" onclick="switchFeed('all')" id="ftab-all">All</div>
+      <div class="type-tab" onclick="switchFeed('reviews')" id="ftab-reviews">Reviews</div>
+      <div class="type-tab" onclick="switchFeed('stories')" id="ftab-stories">Stories</div>
+    </div>
+
+    <!-- ALL feed -->
+    <div class="feed-section active" id="feed-all"></div>
+    <!-- REVIEWS feed -->
+    <div class="feed-section" id="feed-reviews"></div>
+    <!-- STORIES feed -->
+    <div class="feed-section" id="feed-stories"></div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="rv-sidebar">
+    <!-- Overall rating -->
+    <div class="sb-widget">
+      <div class="sb-widget-title">Overall Rating</div>
+      <div class="big-score">
+        <span class="big-score-num" id="sidebar-avg">—</span>
+        <div class="big-score-stars" id="sidebar-stars"></div>
+        <span class="big-score-lbl" id="sidebar-total">— reviews</span>
+      </div>
+      <div id="rating-breakdown"></div>
+    </div>
+
+    <!-- Top countries -->
+    <div class="sb-widget">
+      <div class="sb-widget-title">Top Countries</div>
+      <div class="country-chips" id="country-chips"></div>
+    </div>
+
+    <!-- Quick write -->
+    <div class="sb-widget" style="text-align:center;padding:1.5rem 1.4rem">
+      <div style="font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--surface);margin-bottom:.4rem">Been to Sri Lanka?</div>
+      <p style="font-size:.76rem;font-weight:300;color:rgba(242,237,227,.38);line-height:1.7;margin-bottom:1rem">Your review is saved forever and seen by every future traveller.</p>
+      <button class="cta-open-btn" style="width:100%" onclick="openModal()">+ Share Your Story</button>
+    </div>
+  </aside>
+</div>
+
+<footer style="text-align:center;padding:2rem;border-top:1px solid rgba(255,255,255,.05)">
+  <p style="font-size:.62rem;color:rgba(242,237,227,.18);letter-spacing:.06em">Hidden Gem Sri Lanka · Community · © 2026</p>
+</footer>
+
+<script>
+/* ══════════════════════════════════
+   SEED DATA — 5 reviews + 3 stories
+══════════════════════════════════ */
+const SEED = [
+  {id:'seed-1',type:'review',name:'Sophie Andersson',country:'🇸🇪 Sweden',place:'Ritigala Forest Monastery',rating:5,text:'The AI suggested Ritigala instead of Sigiriya and it changed everything. Completely empty, utterly mystical — ancient steps disappearing into mist. I cried a little. Nothing in three weeks of travel came close.',img:null,likes:24,date:'2026-01-14'},
+  {id:'seed-2',type:'review',name:'Kenji Tanaka',country:'🇯🇵 Japan',place:'Knuckles Cloud Forest',rating:5,text:'As a Japanese traveller I was worried about crowds. Hidden Gem found me a trail through the Knuckles at 6am — just me, the birds, and absolute silence. The mist rolling over the peaks felt like a woodblock print come alive.',img:null,likes:18,date:'2026-02-03'},
+  {id:'seed-3',type:'review',name:'Mia O\'Connor',country:'🇮🇪 Ireland',place:'Home kitchen in Jaffna',rating:5,text:"It sent me to a grandmother's home kitchen in Jaffna for a feast that took three hours. She taught me how to make crab curry from scratch. Nothing on TripAdvisor could get close to that kind of authenticity.",img:null,likes:31,date:'2026-02-18'},
+  {id:'seed-4',type:'review',name:'Rafael Brauer',country:'🇩🇪 Germany',place:'Mirissa Whale Watching (dawn)',rating:5,text:'Just us, a tiny boat, and a blue whale surfacing close enough to feel the spray. Not a single other tourist in sight. This is exactly what travel should feel like — raw, unexpected, humbling.',img:null,likes:22,date:'2026-03-07'},
+  {id:'seed-5',type:'review',name:'Léa Chartier',country:'🇫🇷 France',place:'Bambarakanda Falls',rating:4,text:"Found the waterfall via the app — three local buses and a 45-minute walk through tea estates. Swam in it completely alone for two hours. The kind of place that resets you. It's not easy to reach, which is exactly the point.",img:null,likes:15,date:'2026-03-22'},
+  {id:'seed-s1',type:'story',name:'Tomás Ruiz',country:'🇪🇸 Spain',title:'The Night the Fishermen Invited Us to Dinner',text:"We were photographing the Rekawa lagoon at dusk when three fishermen waved us over to their boat. Three hours later we were eating grilled barracuda and jak rice by firelight, communicating entirely through gesture and laughter. I've been to forty countries. I've never felt more welcomed anywhere. Sri Lanka doesn't just show you beauty — it absorbs you into it.",img:'https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=600&q=70',likes:41,date:'2026-01-29'},
+  {id:'seed-s2',type:'story',name:'Yui Nakamura',country:'🇯🇵 Japan',title:'Finding Silence at the Edge of the World',text:"Horton Plains at 5:30am. No other tourists. Just the sound of wind through montane grassland and the slow materialisation of the horizon at World's End. The cloud forest behind me was breathing — I felt it. I sat there for two hours and said nothing. Some places don't need words. Sri Lanka's highlands are sacred in a way that has nothing to do with religion.",img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=70',likes:37,date:'2026-02-11'},
+  {id:'seed-s3',type:'story',name:'Amara Pereira',country:'🇧🇷 Brazil',title:'One Elephant and a Broken-Down Bus',text:"Our tuk-tuk broke down on the road to Kumana at dusk. While we waited for a mechanic, a lone elephant emerged from the treeline forty metres away and walked straight past us without stopping. The mechanic eventually arrived, took one look at the engine, shrugged, and offered us chai instead. We watched the stars come out. The tuk-tuk got fixed at 11pm. It was the best night of the trip.",img:'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&q=70',likes:55,date:'2026-03-15'},
+];
+
+/* ══════════════════════════════════
+   STORAGE KEY
+══════════════════════════════════ */
+const STORAGE_KEY = 'hg_community_v3';
+
+/* ══════════════════════════════════
+   STATE
+══════════════════════════════════ */
+let allEntries = [];
+let likedIds = new Set(JSON.parse(localStorage.getItem('hg_liked')||'[]'));
+let activeTab = 'all';
+let filterCountry = '';
+let selectedStars = 0;
+let currentModalTab = 'review';
+let imgBase64 = null;
+
+/* ══════════════════════════════════
+   STORAGE HELPERS
+══════════════════════════════════ */
+async function loadEntries(){
+  showFeedLoading();
+  try{
+    const res = await window.storage.get(STORAGE_KEY, true);
+    const stored = res ? JSON.parse(res.value) : [];
+    // merge: seed first (positions 0-4 reviews, 5-7 stories), then user entries starting at index 2 for reviews
+    const seeds = SEED.filter(s=>s.type==='review');
+    const seedStories = SEED.filter(s=>s.type==='story');
+    const userReviews = stored.filter(s=>s.type==='review');
+    const userStories = stored.filter(s=>s.type==='story');
+    // user reviews insert after 2nd seed review (index 2), matching spec
+    const reviews = [seeds[0], seeds[1], ...userReviews, ...seeds.slice(2)];
+    const stories = [...seedStories, ...userStories];
+    allEntries = [...reviews, ...stories];
+  } catch(e){
+    // first time — no key yet
+    allEntries = [...SEED];
+  }
+  renderAll();
+  updateStats();
+  buildSidebar();
+  buildCountryFilter();
+}
+
+async function saveEntry(entry){
+  let stored = [];
+  try{
+    const res = await window.storage.get(STORAGE_KEY, true);
+    if(res) stored = JSON.parse(res.value);
+  } catch(e){}
+  stored.push(entry);
+  await window.storage.set(STORAGE_KEY, JSON.stringify(stored), true);
+}
+
+async function saveLike(id, delta){
+  // persist like count in shared storage
+  const key = 'hg_likes_'+id;
+  let count = 0;
+  try{const r=await window.storage.get(key,true);if(r)count=parseInt(r.value)||0;}catch(e){}
+  count = Math.max(0, count + delta);
+  await window.storage.set(key, String(count), true);
+  return count;
+}
+
+/* ══════════════════════════════════
+   RENDER HELPERS
+══════════════════════════════════ */
+function starsHtml(rating, size=14){
+  let h='';
+  for(let i=1;i<=5;i++){
+    h+=`<svg class="star-svg" width="${size}" height="${size}" viewBox="0 0 20 20"><polygon points="10,1 12.9,7 19.5,7.6 14.5,12 16.2,18.5 10,15 3.8,18.5 5.5,12 0.5,7.6 7.1,7" class="${i<=rating?'star-full':'star-empty'}"/></svg>`;
+  }
+  return h;
+}
+function timeSince(dateStr){
+  const d=new Date(dateStr), now=new Date();
+  const diff=Math.floor((now-d)/1000);
+  if(diff<60)return 'just now';
+  if(diff<3600)return Math.floor(diff/60)+'m ago';
+  if(diff<86400)return Math.floor(diff/3600)+'h ago';
+  if(diff<2592000)return Math.floor(diff/86400)+'d ago';
+  return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+}
+function initials(name){return name.trim().split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase()}
+function avatarHtml(entry, size=44){
+  if(entry.img){
+    return `<img class="card-avatar" src="${entry.img}" alt="${entry.name}" width="${size}" height="${size}" loading="lazy">`;
+  }
+  return `<div class="card-avatar-placeholder" style="width:${size}px;height:${size}px;font-size:${size*.4}px">${initials(entry.name)}</div>`;
+}
+
+/* ══════════════════════════════════
+   RENDER REVIEW CARD
+══════════════════════════════════ */
+function reviewCardHtml(e, delay=0){
+  const liked = likedIds.has(e.id);
+  const isUser = !e.id.startsWith('seed');
+  return `
+  <div class="rv-card${isUser?' user-card':''}" id="card-${e.id}" style="animation-delay:${delay}s">
+    <div class="card-top">
+      ${avatarHtml(e)}
+      <div class="card-meta">
+        <div class="card-name">${esc(e.name)} <span class="card-flag">${e.country.split(' ')[0]}</span></div>
+        <div class="card-country">✈ ${e.country.replace(/^\S+\s/,'')}</div>
+        <div class="card-stars">${starsHtml(e.rating)}</div>
+        <div class="card-date">${timeSince(e.date)}</div>
+      </div>
+    </div>
+    ${e.place?`<span class="card-place-badge">📍 ${esc(e.place)}</span>`:''}
+    ${e.img&&!e.img.startsWith('seed')?`<img class="card-img-attached" src="${e.img}" alt="" loading="lazy">`:''}
+    <p class="card-text">${esc(e.text)}</p>
+    <div class="card-foot">
+      <span class="card-type-lbl">Review</span>
+      <button class="like-btn${liked?' liked':''}" onclick="toggleLike('${e.id}',this)" aria-label="Like">
+        <span class="heart-ico">${liked?'♥':'♡'}</span>
+        <span class="like-count">${e.likes||0}</span>
+      </button>
+    </div>
+  </div>`;
+}
+
+/* ══════════════════════════════════
+   RENDER STORY CARD
+══════════════════════════════════ */
+function storyCardHtml(e, delay=0){
+  const liked = likedIds.has(e.id);
+  const isUser = !e.id.startsWith('seed');
+  const imgSrc = e.img || 'https://images.unsplash.com/photo-1562602833-0f4ab2fc46e3?w=600&q=70';
+  return `
+  <div class="story-card${isUser?' user-card':''}" id="card-${e.id}" style="animation-delay:${delay}s">
+    <div class="story-img-wrap">
+      <img class="story-img" src="${imgSrc}" alt="${esc(e.title||'')}" loading="lazy">
+    </div>
+    <div class="story-body">
+      <h3 class="story-title">${esc(e.title||e.name)}</h3>
+      <p class="story-excerpt">${esc(e.text)}</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
+        <div class="story-author">
+          ${avatarHtml(e,32)}
+          <div>
+            <div class="story-author-name">${esc(e.name)}</div>
+            <div class="story-author-meta">${e.country} · ${timeSince(e.date)}</div>
+          </div>
+        </div>
+        <button class="like-btn${liked?' liked':''}" onclick="toggleLike('${e.id}',this)" aria-label="Like">
+          <span class="heart-ico">${liked?'♥':'♡'}</span>
+          <span class="like-count">${e.likes||0}</span>
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function esc(str=''){
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+/* ══════════════════════════════════
+   RENDER ALL FEEDS
+══════════════════════════════════ */
+function renderAll(){
+  const filtered = filterCountry
+    ? allEntries.filter(e=>e.country.toLowerCase().includes(filterCountry.toLowerCase()))
+    : allEntries;
+
+  const reviews = filtered.filter(e=>e.type==='review');
+  const stories = filtered.filter(e=>e.type==='story');
+
+  const allHtml = [...filtered].map((e,i)=>
+    e.type==='review' ? reviewCardHtml(e,i*.05) : storyCardHtml(e,i*.05)
+  ).join('') || emptyState();
+
+  const rvHtml = reviews.map((e,i)=>reviewCardHtml(e,i*.05)).join('') || emptyState();
+  const stHtml = stories.map((e,i)=>storyCardHtml(e,i*.05)).join('') || emptyState();
+
+  document.getElementById('feed-all').innerHTML = allHtml;
+  document.getElementById('feed-reviews').innerHTML = rvHtml;
+  document.getElementById('feed-stories').innerHTML = stHtml;
+}
+
+function emptyState(){
+  return `<div class="feed-empty"><div class="feed-empty-icon">✦</div><div class="feed-empty-txt">No entries match this filter yet.</div></div>`;
+}
+
+function showFeedLoading(){
+  ['feed-all','feed-reviews','feed-stories'].forEach(id=>{
+    document.getElementById(id).innerHTML=`<div class="feed-loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>Loading community stories…</div>`;
+  });
+}
+
+/* ══════════════════════════════════
+   STATS
+══════════════════════════════════ */
+function updateStats(){
+  const reviews = allEntries.filter(e=>e.type==='review');
+  const total = allEntries.length;
+  const countries = new Set(allEntries.map(e=>e.country.replace(/^\S+\s/,''))).size;
+  const avg = reviews.length ? (reviews.reduce((s,r)=>s+(r.rating||0),0)/reviews.length).toFixed(1) : '—';
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-countries').textContent = countries;
+  document.getElementById('stat-avg').textContent = avg;
+}
+
+/* ══════════════════════════════════
+   SIDEBAR
+══════════════════════════════════ */
+function buildSidebar(){
+  const reviews = allEntries.filter(e=>e.type==='review'&&e.rating);
+  const avg = reviews.length ? (reviews.reduce((s,r)=>s+r.rating,0)/reviews.length).toFixed(1) : '—';
+  document.getElementById('sidebar-avg').textContent = avg;
+  document.getElementById('sidebar-total').textContent = `based on ${reviews.length} review${reviews.length!==1?'s':''}`;
+
+  // star distribution
+  const dist=[0,0,0,0,0];
+  reviews.forEach(r=>{if(r.rating>=1&&r.rating<=5)dist[r.rating-1]++});
+  const max=Math.max(...dist,1);
+  let bHtml='';
+  for(let i=5;i>=1;i--){
+    const pct=Math.round((dist[i-1]/max)*100);
+    bHtml+=`<div class="rating-row"><span class="rating-lbl">${i}</span><div class="rating-bar-bg"><div class="rating-bar-fill" style="width:${pct}%"></div></div><span class="rating-count">${dist[i-1]}</span></div>`;
+  }
+  document.getElementById('rating-breakdown').innerHTML=bHtml;
+
+  // stars display
+  const avgNum=parseFloat(avg)||0;
+  document.getElementById('sidebar-stars').innerHTML=starsHtml(Math.round(avgNum),16);
+
+  // country chips
+  const cmap={};
+  allEntries.forEach(e=>{const c=e.country.replace(/^\S+\s/,'');cmap[c]=(cmap[c]||0)+1;});
+  const sorted=Object.entries(cmap).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  document.getElementById('country-chips').innerHTML=sorted.map(([c,n])=>
+    `<div class="cc-chip${filterCountry===c?' on':''}" onclick="toggleCountryFilter('${c}')">${c} <span style="opacity:.4">${n}</span></div>`
+  ).join('');
+}
+
+function buildCountryFilter(){
+  const cmap={};
+  allEntries.forEach(e=>{const c=e.country.replace(/^\S+\s/,'');cmap[c]=(cmap[c]||0)+1;});
+  const top=Object.entries(cmap).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  document.getElementById('country-filter-row').innerHTML=
+    `<button class="filter-btn${!filterCountry?' on':''}" onclick="toggleCountryFilter('')">All</button>`+
+    top.map(([c])=>`<button class="filter-btn${filterCountry===c?' on':''}" onclick="toggleCountryFilter('${c}')">${c}</button>`).join('');
+}
+
+function toggleCountryFilter(c){
+  filterCountry = filterCountry===c ? '' : c;
+  renderAll();buildSidebar();buildCountryFilter();
+}
+
+/* ══════════════════════════════════
+   TABS
+══════════════════════════════════ */
+function switchFeed(tab){
+  activeTab=tab;
+  ['all','reviews','stories'].forEach(t=>{
+    document.getElementById('ftab-'+t).classList.toggle('on',t===tab);
+    document.getElementById('feed-'+t).classList.toggle('active',t===tab);
+  });
+}
+
+/* ══════════════════════════════════
+   LIKES
+══════════════════════════════════ */
+function toggleLike(id, btn){
+  const liked = likedIds.has(id);
+  const heart = btn.querySelector('.heart-ico');
+  const count = btn.querySelector('.like-count');
+  const cur = parseInt(count.textContent)||0;
+  if(liked){
+    likedIds.delete(id);
+    heart.textContent='♡';btn.classList.remove('liked');
+    count.textContent=Math.max(0,cur-1);
+    saveLike(id,-1);
+  } else {
+    likedIds.add(id);
+    heart.textContent='♥';btn.classList.add('liked');
+    count.textContent=cur+1;
+    saveLike(id,1);
+  }
+  localStorage.setItem('hg_liked',JSON.stringify([...likedIds]));
+}
+
+/* ══════════════════════════════════
+   MODAL
+══════════════════════════════════ */
+function openModal(){
+  document.getElementById('write-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('write-modal').classList.remove('open');
+  document.body.style.overflow='';
+  document.getElementById('submit-success').classList.remove('show');
+  document.getElementById('modal-form-body').style.display='';
+  resetForm();
+}
+document.getElementById('write-modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+
+function switchTab(tab){
+  currentModalTab=tab;
+  document.getElementById('tab-review').classList.toggle('on',tab==='review');
+  document.getElementById('tab-story').classList.toggle('on',tab==='story');
+  document.getElementById('review-fields').style.display=tab==='review'?'':'none';
+  document.getElementById('story-fields').style.display=tab==='story'?'':'none';
+  document.getElementById('text-lbl').textContent=tab==='review'?'Your Review':'Your Story';
+  document.getElementById('inp-text').placeholder=tab==='review'?'Tell travellers what made this place special…':'Share the moment that made you fall in love with Sri Lanka…';
+  document.getElementById('submit-btn').textContent=tab==='review'?'Publish My Review':'Publish My Story';
+}
+
+/* ══════════════════════════════════
+   STAR PICKER
+══════════════════════════════════ */
+function pickStar(v){
+  selectedStars=v;
+  document.querySelectorAll('.sp-star').forEach((s,i)=>s.classList.toggle('lit',i<v));
+}
+
+/* ══════════════════════════════════
+   IMAGE PREVIEW
+══════════════════════════════════ */
+function previewImg(){
+  const file=document.getElementById('img-file').files[0];
+  if(!file)return;
+  if(file.size>2*1024*1024){alert('Image must be under 2 MB');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    imgBase64=e.target.result;
+    const prev=document.getElementById('img-preview');
+    prev.src=imgBase64;prev.style.display='block';
+    document.getElementById('upload-lbl').textContent='📷 '+file.name;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ══════════════════════════════════
+   RESET FORM
+══════════════════════════════════ */
+function resetForm(){
+  ['inp-name','inp-country','inp-place','inp-story-title','inp-text'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  selectedStars=0;imgBase64=null;
+  document.querySelectorAll('.sp-star').forEach(s=>s.classList.remove('lit'));
+  document.getElementById('img-preview').style.display='none';
+  document.getElementById('img-preview').src='';
+  document.getElementById('upload-lbl').textContent='📷 Tap to upload a photo';
+  document.getElementById('form-err').classList.remove('show');
+  document.getElementById('img-file').value='';
+}
+
+/* ══════════════════════════════════
+   SUBMIT
+══════════════════════════════════ */
+async function submitEntry(){
+  const name=document.getElementById('inp-name').value.trim();
+  const country=document.getElementById('inp-country').value;
+  const text=document.getElementById('inp-text').value.trim();
+  const err=document.getElementById('form-err');
+
+  if(!name||!country||!text){err.textContent='Please fill in name, country and your text.';err.classList.add('show');return;}
+  if(currentModalTab==='review'&&!selectedStars){err.textContent='Please select a star rating.';err.classList.add('show');return;}
+  err.classList.remove('show');
+
+  const btn=document.getElementById('submit-btn');
+  btn.disabled=true;btn.textContent='Saving…';
+
+  const entry={
+    id:'u-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),
+    type:currentModalTab,
+    name,country,
+    text,
+    rating:currentModalTab==='review'?selectedStars:null,
+    place:document.getElementById('inp-place').value.trim()||null,
+    title:document.getElementById('inp-story-title').value.trim()||null,
+    img:imgBase64||null,
+    likes:0,
+    date:new Date().toISOString().slice(0,10),
+  };
+
+  try{
+    await saveEntry(entry);
+    // inject into allEntries at correct position
+    if(entry.type==='review'){
+      // find position after 2nd seed review
+      const idx=allEntries.findIndex(e=>e.id==='seed-3');
+      allEntries.splice(idx>=0?idx:2,0,entry);
+    } else {
+      // stories: after seed stories but before older user stories
+      const firstUserStory=allEntries.findIndex(e=>e.type==='story'&&!e.id.startsWith('seed'));
+      if(firstUserStory>=0)allEntries.splice(firstUserStory,0,entry);
+      else allEntries.push(entry);
+    }
+    renderAll();updateStats();buildSidebar();buildCountryFilter();
+    document.getElementById('modal-form-body').style.display='none';
+    document.getElementById('submit-success').classList.add('show');
+    // scroll feed to top
+    setTimeout(()=>document.querySelector('.rv-main').scrollIntoView({behavior:'smooth'}),400);
+  } catch(e){
+    err.textContent='Failed to save. Please try again.';err.classList.add('show');
+    btn.disabled=false;btn.textContent=currentModalTab==='review'?'Publish My Review':'Publish My Story';
+  }
+}
+
+/* ══════════════════════════════════
+   CURSOR
+══════════════════════════════════ */
+const dot=document.getElementById('cdot'),ring=document.getElementById('cring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+document.querySelectorAll('a,button,.rv-card,.story-card,.cc-chip,.filter-btn,.type-tab,.int-check').forEach(el=>{
+  el.addEventListener('mouseenter',()=>ring.classList.add('big'));
+  el.addEventListener('mouseleave',()=>ring.classList.remove('big'));
+});
+(function aC(){
+  dot.style.left=mx+'px';dot.style.top=my+'px';
+  rx+=(mx-rx)*.13;ry+=(my-ry)*.13;
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(aC);
+})();
+
+/* ══════════════════════════════════
+   BOOT
+══════════════════════════════════ */
+loadEntries();
+</script>
+</body>
+</html>
